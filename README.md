@@ -32,11 +32,13 @@ $ fly <destination> [--plan flightplan.js]
 // flightplan.js
 var Flightplan = require('flightplan');
 
-var plan = new Flightplan();
+var tmpDir = 'pstadler-sh-' + new Date().getTime();
+
+// configuration
 plan.briefing({
 	debug: false,
 	destinations: {
-		'test': [{
+		'production': [{
 			// See: https://github.com/mscdex/ssh2#connection-methods
 			host: 'pstadler.sh',
 			username: 'pstadler',
@@ -47,15 +49,32 @@ plan.briefing({
 
 // run commands on localhost
 plan.domestic(function(local) {
+	local.log('Run build');
+	local.exec('gulp build');
+
+	local.log('Copy files to remote host');
+	var filesToCopy = '(git ls-files -z;find assets/public -type f -print0)';
+	local.exec(filesToCopy + '|rsync --files-from - -avz0 --rsh="ssh" ./ pstadler@95.85.6.75:/tmp/' + tmpDir);
 });
 
 // run commands on remote hosts (destinations)
 plan.international(function(remote) {
+	remote.log('Move folder to web root');
+	remote.sudo('cp -R /tmp/' + tmpDir + ' ~', { user: 'www' });
+	remote.rm('-rf /tmp/' + tmpDir);
+
+	remote.log('Install dependencies');
+	remote.sudo('npm --production --silent --prefix ~/' + tmpDir + ' install ~/' + tmpDir, { user: 'www' });
+
+	remote.log('Reload application');
+	remote.sudo('ln -sf ~/' + tmpDir + ' ~/pstadler-sh', { user: 'www' });
+	remote.sudo('pm2 reload pstadler-sh', { user: 'www' });
 });
 
-// run more commands on localhost
-plan.domestic(function(local) {
-});
+// run more commands on localhost afterwards
+plan.domestic(function(local) { /* ... */ });
+// ...or on remote hosts
+plan.domestic(function(remote) { /* ... */ });
 
 // executed if flightplan succeeded
 plan.success(function() {
