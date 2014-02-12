@@ -11,7 +11,7 @@
     "ssh",
     "task",
     "parallel",
-    "sequencial",
+    "sequential",
     "fabric"
   ],
   "readmeFilename": "README.md",
