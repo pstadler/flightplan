@@ -54,7 +54,8 @@ plan.domestic(function(local) {
 
 	local.log('Copy files to remote host');
 	var filesToCopy = '(git ls-files -z;find assets/public -type f -print0)';
-	local.exec(filesToCopy + '|rsync --files-from - -avz0 --rsh="ssh" ./ pstadler@95.85.6.75:/tmp/' + tmpDir);
+	local.exec(filesToCopy + '|rsync --files-from - -avz0 --rsh="ssh"'
+				+ ' ./ pstadler@pstadler.sh:/tmp/' + tmpDir);
 });
 
 // run commands on remote hosts (destinations)
@@ -64,7 +65,8 @@ plan.international(function(remote) {
 	remote.rm('-rf /tmp/' + tmpDir);
 
 	remote.log('Install dependencies');
-	remote.sudo('npm --production --silent --prefix ~/' + tmpDir + ' install ~/' + tmpDir, { user: 'www' });
+	remote.sudo('npm --production --silent --prefix ~/'
+					+ tmpDir + ' install ~/' + tmpDir, { user: 'www' });
 
 	remote.log('Reload application');
 	remote.sudo('ln -sf ~/' + tmpDir + ' ~/pstadler-sh', { user: 'www' });
