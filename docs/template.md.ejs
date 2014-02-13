@@ -1,0 +1,42 @@
+<? docfiles.forEach(function(doc) { ?>
+
+  <!-- Start <?= doc.filename ?> -->
+
+  <? doc.javadoc.forEach(function(comment) { ?>
+    <? if (!comment.ignore) { ?>
+      <? if (comment.name) { ?>
+        <? if (comment.isMethod || comment.isFunction) { ?>
+          ### <?= doc.javadoc[0].name.toLowerCase() ?>.<?= comment.name -?>
+          <? if (comment.returnTags.length > 0) { -?> →
+            <? comment.returnTags.forEach(function(returnTag) { -?>
+              <?= ' ' + returnTag.joinedTypes ?><?= ' ' + returnTag.description ?>
+            <? }) ?>
+          <? } ?>
+        <? } else { ?>
+          ## <?= comment.name ?>
+        <? } ?>
+      <? } ?>
+
+        <?= comment.description ?>
+
+        <? if (comment.deprecated) { ?>
+          **Deprecated**
+        <? } ?>
+
+        <? if (comment.author) { ?>
+          Author: <?- comment.author ?>
+        <? } ?>
+
+        <? if (comment.version) { ?>
+          Version: <?= comment.version ?>
+        <? } ?>
+
+        <? if (comment.see) { ?>
+          See: <?= comment.see ?>
+        <? } ?>
+    <? } ?>
+  <? }) ?>
+
+  <!-- End <?= doc.filename ?> -->
+
+<? }) ?>

@@ -33,12 +33,13 @@
     "fibers": "~1.0.1",
     "ssh2": "~0.2.17",
     "colors": "~0.6.2",
-    "argparse": "~0.1.15"
+    "commander": "~2.1.0"
   },
   "devDependencies": {
     "gulp": "~3.5.2",
     "gulp-jshint": "~1.4.0",
-    "jshint-stylish": "~0.1.5"
+    "jshint-stylish": "~0.1.5",
+    "markdox": "~0.1.2"
   },
   "license": "MIT"
 }
