@@ -9,7 +9,6 @@ Flightplan ~~is~~ *will be* a feature complete [node.js](http://nodejs.org) libr
 - Documentation
 - Tests
 - Simple interface for file transport to remote hosts (e.g. `rsync`)
-- Interactive session for remote hosts (e.g. to enter password / passphrase)
 
 ## Installation & Usage
 
@@ -67,7 +66,7 @@ plan.international(function(remote) {
 					+ tmpDir + ' install ~/' + tmpDir, { user: 'www' });
 
 	remote.log('Reload application');
-	remote.sudo('ln -sf ~/' + tmpDir + ' ~/pstadler-sh', { user: 'www' });
+	remote.sudo('ln -snf ~/' + tmpDir + ' ~/pstadler-sh', { user: 'www' });
 	remote.sudo('pm2 reload pstadler-sh', { user: 'www' });
 });
 
