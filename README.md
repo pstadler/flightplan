@@ -40,7 +40,7 @@ plan.briefing({
 			// See: https://github.com/mscdex/ssh2#connection-methods
 			host: 'pstadler.sh',
 			username: 'pstadler',
-			privateKey: require('fs').readFileSync('/Users/pstadler/.ssh/id_rsa')
+			agent: process.env.SSH_AUTH_SOCK
 		}]
 	}
 });
