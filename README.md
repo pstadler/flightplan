@@ -8,8 +8,6 @@ Flightplan ~~is~~ *will be* a feature complete [node.js](http://nodejs.org) libr
 
 - Documentation
 - Tests
-- Catch errors in fibers
-- Handlers for `uncaughtException` and `SIGINT`
 - Simple interface for file transport to remote hosts (e.g. `rsync`)
 - Interactive session for remote hosts (e.g. to enter password / passphrase)
 
