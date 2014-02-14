@@ -30,7 +30,7 @@ gulp.task('docs', function(taskFinished) {
 		fs.writeFileSync(options.output, apidocs);
 
 		var readme = fs.readFileSync('README.md', 'utf8');
-		readme = readme.replace(/<!-- DOCS -->([.|\n]*)<!-- ENDDOCS -->/gm, '<!-- DOCS -->' + apidocs +'<!-- ENDDOCS -->');
+		readme = readme.replace(/<!-- DOCS -->(?:\r|\n|.)+<!-- ENDDOCS -->/gm, '<!-- DOCS -->' + apidocs +'<!-- ENDDOCS -->');
 
 		fs.writeFileSync('README.md', readme);
 		console.log('Documentation generated.');

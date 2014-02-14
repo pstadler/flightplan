@@ -1,7 +1,7 @@
 {
   "name": "flightplan",
   "description": "Run a sequence of commands against local and remote hosts",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Patrick Stadler <patrick.stadler@gmail.com>",
   "keywords": [
     "deploy",

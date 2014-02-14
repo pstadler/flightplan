@@ -109,11 +109,11 @@ handled with the `briefing()` method.
 var plan = new Flightplan();
 ```
 
-#### Flights
+### Flights
 A flight is a set of commands to be executed on one or more hosts. There are
 two types of flights:
 
-##### Domestic flights
+#### Domestic flights
 
 Commands in domestic flights are executed on the **local host**.
 
@@ -123,7 +123,7 @@ plan.domestic(function(transport) {
 });
 ```
 
-##### International flights
+#### International flights
 
 Commands in international flights are executed in **parallel** against
 remote hosts defined during the briefing.
@@ -152,14 +152,14 @@ plan.domestic(function(transport) {});
 // ...
 ```
 
-### flightplan.briefing(config) → this
+### flightplan.briefing(config) → this 
 
 Configure the flightplan's destinations with `briefing()`. Without a
 proper briefing you can't do international flights which require at
 least one destination. Each destination consists of one ore more hosts.
 
-Values in the hosts section are passed directly to @mscdex's
-[ssh2.connect() method](https://github.com/mscdex/ssh2#connection-methods)
+Values in the hosts section are passed directly to the `connect()`
+method of [mscdex/ssh2](https://github.com/mscdex/ssh2#connection-methods).
 
 ```javascript
 plan.briefing({
@@ -195,7 +195,7 @@ the `-u|--username` option:
 fly production --username=admin
 ```
 
-### flightplan.domestic(fn) → this
+### flightplan.domestic(fn) → this 
 
 Calling this method registers a domestic flight. Domestic flights are
 executed on your local host. When `fn` gets called a `Transport` object
@@ -207,7 +207,7 @@ plan.domestic(function(local) {
 });
 ```
 
-### flightplan.international(fn) → this
+### flightplan.international(fn) → this 
 
 Calling this method registers an international flight. International
 flights are executed on the current destination's remote hosts defined
@@ -220,12 +220,12 @@ plan.international(function(remote) {
 });
 ```
 
-### flightplan.success(fn) → this
+### flightplan.success(fn) → this 
 
 `fn()` is called after the flightplan (and therefore all flights)
 succeeded.
 
-### flightplan.disaster(fn) → this
+### flightplan.disaster(fn) → this 
 
 `fn()` is called after the flightplan was aborted.
 
@@ -233,7 +233,7 @@ succeeded.
 
 `fn()` is called at the very end of the flightplan's execution.
 
-### flightplan.isAborted() → Boolean
+### flightplan.isAborted() → Boolean 
 
 Whether the flightplan is aborted or not.
 
@@ -313,7 +313,7 @@ console.log(retval); // { code: 0, stdout: 'Hello world\n', stderr: null }
 Execute a command as another user with `sudo()`. It has the same
 signature as `exec()`. Per default, the user under which the command
 will be executed is "root". This can be changed by passing
-`user: &lt;name&gt;` with the second argument:
+`user: "name"` with the second argument:
 
 ```javascript
 // will run: sudo -u root -i bash -c 'Hello world'
@@ -383,7 +383,8 @@ remote.failsafe();
 remote.ls('foo'); // ls: foo: No such file or directory
 remote.log('Previous command failed, but flight was not aborted');
 remote.unsafe();
-remote.ls('foo'); // ls: foo: No such file or directory -&gt; abort
+remote.ls('foo'); // ls: foo: No such file or directory
+// flight aborted
 ```
 
 ### transport.debug(message)
