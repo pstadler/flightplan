@@ -2,7 +2,7 @@
 
 Run a sequence of commands against local and remote hosts.
 
-Flightplan ~~is~~ *will be* a feature complete [node.js](http://nodejs.org) library for streamlining application deployment or systems administration tasks, similar to Python's [Fabric](http://fabfile.org).
+Flightplan is a [node.js](http://nodejs.org) library for streamlining application deployment or systems administration tasks, similar to Python's [Fabric](http://fabfile.org).
 
 ## Installation & Usage
 
@@ -13,7 +13,7 @@ $ npm install -g flightplan
 # use it in your project
 $ npm install flightplan --save-dev
 
-# to run a flightplan (`fly --help` for more information)
+# run a flightplan (`fly --help` for more information)
 $ fly <destination> [--plan flightplan.js]
 ```
 
@@ -29,12 +29,23 @@ var tmpDir = 'pstadler-sh-' + new Date().getTime();
 plan.briefing({
 	debug: false,
 	destinations: {
-		'production': [{
-			// See: https://github.com/mscdex/ssh2#connection-methods
-			host: 'pstadler.sh',
+		'staging': {
+			host: 'staging.pstadler.sh',
 			username: 'pstadler',
 			agent: process.env.SSH_AUTH_SOCK
-		}]
+		},
+		'production': [
+			{
+				host: 'www1.pstadler.sh',
+				username: 'pstadler',
+				agent: process.env.SSH_AUTH_SOCK
+			},
+			{
+				host: 'www2.pstadler.sh',
+				username: 'pstadler',
+				agent: process.env.SSH_AUTH_SOCK
+			}
+		]
 	}
 });
 
