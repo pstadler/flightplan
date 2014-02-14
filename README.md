@@ -97,158 +97,6 @@ plan.debriefing(function() {
 
 <!-- DOCS -->
 
-<!-- Start lib/flightplan.js -->
-
-## Flightplan
-
-A flightplan is a set of subsequent flights to be executed on one or more
-hosts. The constructor doesn't take any arguments. The configuration is
-handled with the `briefing()` method.
-
-```javascript
-var plan = new Flightplan();
-```
-
-### Flights
-A flight is a set of commands to be executed on one or more hosts. There are
-two types of flights:
-
-#### Domestic flights
-
-Commands in domestic flights are executed on the **local host**.
-
-```javascript
-plan.domestic(function(transport) {
-    transport.hostname(); // prints the hostname of the local host
-});
-```
-
-#### International flights
-
-Commands in international flights are executed in **parallel** against
-remote hosts defined during the briefing.
-
-```javascript
-plan.international(function(transport) {
-    transport.hostname(); // prints the hostname(s) of the remote host(s)
-});
-```
-
-You can define multiple flights of each type. They will be executed in the
-order of their definition. If a previous flight failed, all subsequent
-flights won't get executed. For more information about what it means for
-a flight to fail, see the section about `Transport`.
-
-```javascript
-// executed first
-plan.domestic(function(transport) {});
-
-// executed if first flight succeeded
-plan.international(function(transport) {});
-
-// executed if second flight succeeded
-plan.domestic(function(transport) {});
-
-// ...
-```
-
-### flightplan.briefing(config) → this
-
-Configure the flightplan's destinations with `briefing()`. Without a
-proper briefing you can't do international flights which require at
-least one destination. Each destination consists of one ore more hosts.
-
-Values in the hosts section are passed directly to the `connect()`
-method of [mscdex/ssh2](https://github.com/mscdex/ssh2#connection-methods).
-
-```javascript
-plan.briefing({
-    destinations: {
-        // run with `fly staging`
-        'staging': {
-            // see: https://github.com/mscdex/ssh2#connection-methods
-            host: 'staging.pstadler.sh',
-            username: 'pstadler',
-            agent: process.env.SSH_AUTH_SOCK
-        },
-        // run with `fly production`
-        'production': [
-            {
-                host: 'www1.pstadler.sh',
-                username: 'pstadler',
-                agent: process.env.SSH_AUTH_SOCK
-            },
-            {
-                host: 'www2.pstadler.sh',
-                username: 'pstadler',
-                agent: process.env.SSH_AUTH_SOCK
-            },
-        ]
-    }
-});
-```
-
-You can override the `username` value of all hosts by calling `fly` with
-the `-u|--username` option:
-
-```bash
-fly production --username=admin
-```
-
-### flightplan.domestic(fn) → this
-
-Calling this method registers a domestic flight. Domestic flights are
-executed on your local host. When `fn` gets called a `Transport` object
-is passed with the first argument.
-
-```
-plan.domestic(function(local) {
-    local.echo('hello from your localhost.');
-});
-```
-
-### flightplan.international(fn) → this
-
-Calling this method registers an international flight. International
-flights are executed on the current destination's remote hosts defined
-with `briefing()`. When `fn` gets called a `Transport` object is passed
-with the first argument.
-
-```
-plan.international(function(remote) {
-    remote.echo('hello from the remote host.');
-});
-```
-
-### flightplan.success(fn) → this
-
-`fn()` is called after the flightplan (and therefore all flights)
-succeeded.
-
-### flightplan.disaster(fn) → this
-
-`fn()` is called after the flightplan was aborted.
-
-### flightplan.debriefing(fn)
-
-`fn()` is called at the very end of the flightplan's execution.
-
-### flightplan.isAborted() → Boolean
-
-Whether the flightplan is aborted or not.
-
-### flightplan.abort([message])
-
-Calling this method will abort the flightplan and prevent any further
-flights from being executed. An optional message can be passed which
-will be displayed after the flightplan has been aborted.
-
-```javascript
-plan.abort('Severe turbulences over the atlantic ocean!');
-```
-
-<!-- End lib/flightplan.js -->
-
 <!-- Start lib/transport/transport.js -->
 
 ## Transport
@@ -323,7 +171,7 @@ transport.sudo('echo Hello world');
 transport.sudo('echo Hello world', {user: 'www'});
 
 // further options passed (see `exec()`)
-transport.sudo('echo Hello world', {user: 'www'});
+transport.sudo('echo Hello world', {user: 'www', silent: true, failsafe: true});
 ```
 
 ### transport.log(message)
@@ -407,6 +255,158 @@ remote.abort('Severe turbulences over the atlantic ocean!');
 ```
 
 <!-- End lib/transport/transport.js -->
+
+<!-- Start lib/flightplan.js -->
+
+## Flightplan
+
+A flightplan is a set of subsequent flights to be executed on one or more
+hosts. The constructor doesn't take any arguments. The configuration is
+handled with the `briefing()` method.
+
+```javascript
+var plan = new Flightplan();
+```
+
+### Flights
+A flight is a set of commands to be executed on one or more hosts. There are
+two types of flights:
+
+#### Domestic flights
+
+Commands in domestic flights are executed on the **local host**.
+
+```javascript
+plan.domestic(function(transport) {
+    transport.hostname(); // prints the hostname of the local host
+});
+```
+
+#### International flights
+
+Commands in international flights are executed in **parallel** against
+remote hosts defined during the briefing.
+
+```javascript
+plan.international(function(transport) {
+    transport.hostname(); // prints the hostname(s) of the remote host(s)
+});
+```
+
+You can define multiple flights of each type. They will be executed in the
+order of their definition. If a previous flight failed, all subsequent
+flights won't get executed. For more information about what it means for
+a flight to fail, see the section about `Transport`.
+
+```javascript
+// executed first
+plan.domestic(function(transport) {});
+
+// executed if first flight succeeded
+plan.international(function(transport) {});
+
+// executed if second flight succeeded
+plan.domestic(function(transport) {});
+
+// ...
+```
+
+### flightplan.briefing(config) → this 
+
+Configure the flightplan's destinations with `briefing()`. Without a
+proper briefing you can't do international flights which require at
+least one destination. Each destination consists of one ore more hosts.
+
+Values in the hosts section are passed directly to the `connect()`
+method of [mscdex/ssh2](https://github.com/mscdex/ssh2#connection-methods).
+
+```javascript
+plan.briefing({
+    destinations: {
+        // run with `fly staging`
+        'staging': {
+            // see: https://github.com/mscdex/ssh2#connection-methods
+            host: 'staging.pstadler.sh',
+            username: 'pstadler',
+            agent: process.env.SSH_AUTH_SOCK
+        },
+        // run with `fly production`
+        'production': [
+            {
+                host: 'www1.pstadler.sh',
+                username: 'pstadler',
+                agent: process.env.SSH_AUTH_SOCK
+            },
+            {
+                host: 'www2.pstadler.sh',
+                username: 'pstadler',
+                agent: process.env.SSH_AUTH_SOCK
+            },
+        ]
+    }
+});
+```
+
+You can override the `username` value of all hosts by calling `fly` with
+the `-u|--username` option:
+
+```bash
+fly production --username=admin
+```
+
+### flightplan.domestic(fn) → this 
+
+Calling this method registers a domestic flight. Domestic flights are
+executed on your local host. When `fn` gets called a `Transport` object
+is passed with the first argument.
+
+```
+plan.domestic(function(local) {
+    local.echo('hello from your localhost.');
+});
+```
+
+### flightplan.international(fn) → this 
+
+Calling this method registers an international flight. International
+flights are executed on the current destination's remote hosts defined
+with `briefing()`. When `fn` gets called a `Transport` object is passed
+with the first argument.
+
+```
+plan.international(function(remote) {
+    remote.echo('hello from the remote host.');
+});
+```
+
+### flightplan.success(fn) → this 
+
+`fn()` is called after the flightplan (and therefore all flights)
+succeeded.
+
+### flightplan.disaster(fn) → this 
+
+`fn()` is called after the flightplan was aborted.
+
+### flightplan.debriefing(fn)
+
+`fn()` is called at the very end of the flightplan's execution.
+
+### flightplan.isAborted() → Boolean 
+
+Whether the flightplan is aborted or not.
+
+### flightplan.abort([message])
+
+Calling this method will abort the flightplan and prevent any further
+flights from being executed. An optional message can be passed which
+will be displayed after the flightplan has been aborted.
+
+```javascript
+plan.abort('Severe turbulences over the atlantic ocean!');
+```
+
+<!-- End lib/flightplan.js -->
 
 <!-- ENDDOCS -->
 
