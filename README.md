@@ -78,7 +78,7 @@ plan.international(function(remote) {
 // run more commands on localhost afterwards
 plan.domestic(function(local) { /* ... */ });
 // ...or on remote hosts
-plan.domestic(function(remote) { /* ... */ });
+plan.international(function(remote) { /* ... */ });
 
 // executed if flightplan succeeded
 plan.success(function() {
@@ -152,7 +152,7 @@ plan.domestic(function(transport) {});
 // ...
 ```
 
-### flightplan.briefing(config) → this 
+### flightplan.briefing(config) → this
 
 Configure the flightplan's destinations with `briefing()`. Without a
 proper briefing you can't do international flights which require at
@@ -195,7 +195,7 @@ the `-u|--username` option:
 fly production --username=admin
 ```
 
-### flightplan.domestic(fn) → this 
+### flightplan.domestic(fn) → this
 
 Calling this method registers a domestic flight. Domestic flights are
 executed on your local host. When `fn` gets called a `Transport` object
@@ -207,7 +207,7 @@ plan.domestic(function(local) {
 });
 ```
 
-### flightplan.international(fn) → this 
+### flightplan.international(fn) → this
 
 Calling this method registers an international flight. International
 flights are executed on the current destination's remote hosts defined
@@ -220,12 +220,12 @@ plan.international(function(remote) {
 });
 ```
 
-### flightplan.success(fn) → this 
+### flightplan.success(fn) → this
 
 `fn()` is called after the flightplan (and therefore all flights)
 succeeded.
 
-### flightplan.disaster(fn) → this 
+### flightplan.disaster(fn) → this
 
 `fn()` is called after the flightplan was aborted.
 
@@ -233,7 +233,7 @@ succeeded.
 
 `fn()` is called at the very end of the flightplan's execution.
 
-### flightplan.isAborted() → Boolean 
+### flightplan.isAborted() → Boolean
 
 Whether the flightplan is aborted or not.
 
