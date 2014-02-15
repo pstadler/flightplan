@@ -16,23 +16,25 @@ gulp.task('lint', function() {
 });
 
 gulp.task('docs', function(taskFinished) {
-	var files = ['lib/flightplan.js', 'lib/transport/transport.js'];
+	var sources = ['lib/flightplan.js', 'lib/transport/transport.js']
+		, readme = 'README.md'
+		, tmpFile = 'docs/API.md';
+
 	var options = {
-		output: 'docs/API.md',
-		template: 'docs/template.md.ejs'
+		template: 'docs/template.md.ejs',
+		output: tmpFile
 	};
 
-	markdox.process(files, options, function() {
-		var apidocs = fs.readFileSync(options.output, 'utf8');
+	markdox.process(sources, options, function() {
+		var docsStr = fs.readFileSync(tmpFile, 'utf8')
+			, readmeStr = fs.readFileSync(readme, 'utf8');
 
-		apidocs = apidocs.replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+		docsStr = docsStr.replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+		readmeStr = readmeStr.replace(/(<!-- DOCS -->)(?:\r|\n|.)+(<!-- ENDDOCS -->)/gm
+										, "$1" + docsStr + "$2");
 
-		fs.writeFileSync(options.output, apidocs);
-
-		var readme = fs.readFileSync('README.md', 'utf8');
-		readme = readme.replace(/<!-- DOCS -->(?:\r|\n|.)+<!-- ENDDOCS -->/gm, '<!-- DOCS -->' + apidocs +'<!-- ENDDOCS -->');
-
-		fs.writeFileSync('README.md', readme);
+		fs.writeFileSync(readme, readmeStr);
+		fs.unlinkSync(tmpFile);
 		console.log('Documentation generated.');
 		taskFinished();
 	});
