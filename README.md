@@ -154,7 +154,7 @@ plan.local(function(transport) {});
 // ...
 ```
 
-### flightplan.briefing(config) → this
+### flightplan.briefing(config) → this 
 
 Configure the flightplan's destinations with `briefing()`. Without a
 proper briefing you can't do remote flights which require at
@@ -197,37 +197,37 @@ the `-u|--username` option:
 fly production --username=admin
 ```
 
-### flightplan.local(fn) → this
+### flightplan.local(fn) → this 
 
 Calling this method registers a local flight. Local flights are
 executed on your local host. When `fn` gets called a `Transport` object
 is passed with the first argument.
 
-```
+```javascript
 plan.local(function(local) {
     local.echo('hello from your localhost.');
 });
 ```
 
-### flightplan.remote(fn) → this
+### flightplan.remote(fn) → this 
 
 Calling this method registers a remote flight. Remote
 flights are executed on the current destination's remote hosts defined
 with `briefing()`. When `fn` gets called a `Transport` object is passed
 with the first argument.
 
-```
+```javascript
 plan.remote(function(remote) {
     remote.echo('hello from the remote host.');
 });
 ```
 
-### flightplan.success(fn) → this
+### flightplan.success(fn) → this 
 
 `fn()` is called after the flightplan (and therefore all flights)
 succeeded.
 
-### flightplan.disaster(fn) → this
+### flightplan.disaster(fn) → this 
 
 `fn()` is called after the flightplan was aborted.
 
@@ -235,7 +235,7 @@ succeeded.
 
 `fn()` is called at the very end of the flightplan's execution.
 
-### flightplan.isAborted() → Boolean
+### flightplan.isAborted() → Boolean 
 
 Whether the flightplan is aborted or not.
 
