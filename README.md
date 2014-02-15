@@ -25,6 +25,8 @@ var Flightplan = require('flightplan');
 
 var tmpDir = 'pstadler-sh-' + new Date().getTime();
 
+var plan = new Flightplan();
+
 // configuration
 plan.briefing({
 	debug: false,
@@ -50,7 +52,7 @@ plan.briefing({
 });
 
 // run commands on localhost
-plan.domestic(function(local) {
+plan.local(function(local) {
 	local.log('Run build');
 	local.exec('gulp build');
 
@@ -61,7 +63,7 @@ plan.domestic(function(local) {
 });
 
 // run commands on remote hosts (destinations)
-plan.international(function(remote) {
+plan.remote(function(remote) {
 	remote.log('Move folder to web root');
 	remote.sudo('cp -R /tmp/' + tmpDir + ' ~', { user: 'www' });
 	remote.rm('-rf /tmp/' + tmpDir);
@@ -76,9 +78,9 @@ plan.international(function(remote) {
 });
 
 // run more commands on localhost afterwards
-plan.domestic(function(local) { /* ... */ });
+plan.local(function(local) { /* ... */ });
 // ...or on remote hosts
-plan.international(function(remote) { /* ... */ });
+plan.remote(function(remote) { /* ... */ });
 
 // executed if flightplan succeeded
 plan.success(function() {
@@ -113,23 +115,23 @@ var plan = new Flightplan();
 A flight is a set of commands to be executed on one or more hosts. There are
 two types of flights:
 
-#### Domestic flights
+#### Local flights
 
-Commands in domestic flights are executed on the **local host**.
+Commands in local flights are executed on the **local host**.
 
 ```javascript
-plan.domestic(function(transport) {
+plan.local(function(transport) {
     transport.hostname(); // prints the hostname of the local host
 });
 ```
 
-#### International flights
+#### Remote flights
 
-Commands in international flights are executed in **parallel** against
+Commands in remote flights are executed in **parallel** against
 remote hosts defined during the briefing.
 
 ```javascript
-plan.international(function(transport) {
+plan.remote(function(transport) {
     transport.hostname(); // prints the hostname(s) of the remote host(s)
 });
 ```
@@ -141,21 +143,21 @@ a flight to fail, see the section about `Transport`.
 
 ```javascript
 // executed first
-plan.domestic(function(transport) {});
+plan.local(function(transport) {});
 
 // executed if first flight succeeded
-plan.international(function(transport) {});
+plan.remote(function(transport) {});
 
 // executed if second flight succeeded
-plan.domestic(function(transport) {});
+plan.local(function(transport) {});
 
 // ...
 ```
 
-### flightplan.briefing(config) → this 
+### flightplan.briefing(config) → this
 
 Configure the flightplan's destinations with `briefing()`. Without a
-proper briefing you can't do international flights which require at
+proper briefing you can't do remote flights which require at
 least one destination. Each destination consists of one ore more hosts.
 
 Values in the hosts section are passed directly to the `connect()`
@@ -195,37 +197,37 @@ the `-u|--username` option:
 fly production --username=admin
 ```
 
-### flightplan.domestic(fn) → this 
+### flightplan.local(fn) → this
 
-Calling this method registers a domestic flight. Domestic flights are
+Calling this method registers a local flight. Local flights are
 executed on your local host. When `fn` gets called a `Transport` object
 is passed with the first argument.
 
 ```
-plan.domestic(function(local) {
+plan.local(function(local) {
     local.echo('hello from your localhost.');
 });
 ```
 
-### flightplan.international(fn) → this 
+### flightplan.remote(fn) → this
 
-Calling this method registers an international flight. International
+Calling this method registers a remote flight. Remote
 flights are executed on the current destination's remote hosts defined
 with `briefing()`. When `fn` gets called a `Transport` object is passed
 with the first argument.
 
 ```
-plan.international(function(remote) {
+plan.remote(function(remote) {
     remote.echo('hello from the remote host.');
 });
 ```
 
-### flightplan.success(fn) → this 
+### flightplan.success(fn) → this
 
 `fn()` is called after the flightplan (and therefore all flights)
 succeeded.
 
-### flightplan.disaster(fn) → this 
+### flightplan.disaster(fn) → this
 
 `fn()` is called after the flightplan was aborted.
 
@@ -233,7 +235,7 @@ succeeded.
 
 `fn()` is called at the very end of the flightplan's execution.
 
-### flightplan.isAborted() → Boolean 
+### flightplan.isAborted() → Boolean
 
 Whether the flightplan is aborted or not.
 
@@ -255,23 +257,23 @@ plan.abort('Severe turbulences over the atlantic ocean!');
 
 A transport is the interface you use during flights. Basically they
 offer you a set of methods to execute a chain of commands. Depending on the
-type of flight, this is either a `ShellTransport` object for domestic
-flights, or an `SSHTransport` for international flights. Both transports
+type of flight, this is either a `ShellTransport` object for local
+flights, or an `SSHTransport` for remote flights. Both transports
 expose the same set of methods as described in this section.
 
 ```javascript
-plan.domestic(function(local) {
+plan.local(function(local) {
     local.echo('ShellTransport.echo() called');
 });
 
-plan.domestic(function(remote) {
+plan.local(function(remote) {
     remote.echo('SSHTransport.echo() called');
 });
 ```
 
 We call the Transport object `transport` in the following section to avoid
-confusion. However, do yourself a favor and use `local` for domestic, and
-`remote` for international flights.
+confusion. However, do yourself a favor and use `local` for local, and
+`remote` for remote flights.
 
 ### transport.exec(command[, options]) → code: int, stdout: String, stderr: String
 
@@ -349,7 +351,7 @@ transport.ls(); // output won't be printed to stdout
 ### transport.verbose()
 
 Calling `verbose()` reverts the behavior introduced with `silent()`.
-Output of commands will be printed to
+Output of commands will be printed to stdout.
 
 ```javascript
 transport.silent();
