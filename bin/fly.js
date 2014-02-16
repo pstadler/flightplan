@@ -23,7 +23,7 @@ if(!fs.existsSync(flightFile)) {
 var flightplan = require(flightFile)
 	, options = {
 		username: program.username || null,
-		debug: program.debug || false
+		debug: program.debug || null
 	};
 
 var destination = program.args[0];

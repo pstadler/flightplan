@@ -56,10 +56,10 @@ plan.local(function(local) {
 	local.log('Run build');
 	local.exec('gulp build');
 
-	local.log('Copy files to remote host');
-	var filesToCopy = '(git ls-files -z;find assets/public -type f -print0)';
-	local.exec(filesToCopy + '|rsync --files-from - -avz0 --rsh="ssh"'
-				+ ' ./ pstadler@pstadler.sh:/tmp/' + tmpDir);
+	local.log('Copy files to remote hosts');
+	var filesToCopy = local.exec('git ls-files', {silent: true});
+	// rsync `filesToCopy` to all the destination's hosts
+	local.transfer(filesToCopy, '/tmp/' + tmpDir);
 });
 
 // run commands on remote hosts (destinations)
@@ -328,13 +328,54 @@ transport.sudo('echo Hello world', {user: 'www'});
 transport.sudo('echo Hello world', {user: 'www', silent: true, failsafe: true});
 ```
 
+### transport.transfer(files, remoteDir[, options]) → [results] 
+
+Copy a list of files to the current destination's remote host(s) using
+`rsync` with the SSH protocol. File transfers are executed in parallel.
+ After finishing all transfers, an array containing results from
+`transport.exec()` is returned. This method is only available on local
+flights.
+
+```javascript
+var files = ['path/to/file1', 'path/to/file2'];
+local.transfer(files, '/tmp/foo');
+```
+
+#### Files argument
+To make things more comfortable, the `files` argument doesn't have to be
+passed as an array. Results from previous commands and zero-terminated
+strings are handled as well:
+
+```javascript
+// use result from a previous command
+var files = local.git('ls-files', {silent: true}); // get list of files under version control
+local.transfer(files, '/tmp/foo');
+
+// use zero-terminated result from a previous command
+var files = local.exec('(git ls-files -z;find node_modules -type f -print0)', {silent: true});
+local.transfer(files, '/tmp/foo');
+
+// use results from multiple commands
+var result1 = local.git('ls-files', {silent: true}).stdout.split('\n');
+var result2 = local.find('node_modules -type f', {silent: true}).stdout.split('\n');
+var files = result1.concat(result2);
+files.push('path/to/another/file');
+local.transfer(files, '/tmp/foo');
+```
+
+`transfer()` will use the current host's username defined with
+`briefing()` unless `fly` is called with the `-u|--username` option.
+In this case the latter will be used. If debugging is enabled
+(either with `briefing()` or with `fly --debug`), `rsync` is executed
+in verbose mode (`-v`).
+
 ### transport.log(message)
 
 Print a message to stdout. Flightplan takes care that the message
 is formatted correctly within the current context.
 
 ```javascript
-transport.log('Copying files to remote host');
+transport.log('Copying files to remote hosts');
 ```
 
 ### transport.silent()
@@ -395,7 +436,7 @@ Print a debug message to stdout. Flightplan takes care that the message
 is formatted correctly within the current context.
 
 ```javascript
-remote.debug('Copying files to remote host');
+remote.debug('Copying files to remote hosts');
 ```
 
 ### transport.abort([message])
@@ -415,7 +456,6 @@ remote.abort('Severe turbulences over the atlantic ocean!');
 ## What's planned?
 
 - Add possibility to define a `sudoUser` per host with `briefing()`.
-- Add a simple interface for file transport to remote hosts (e.g. `rsync`).
 - Tests will be implemented with upcoming releases. A part of this will be driven by bug reports.
 
 [npm-url]: https://npmjs.org/package/flightplan
