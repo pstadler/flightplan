@@ -383,13 +383,13 @@ transport.log('Copying files to remote hosts');
 Prompt for user input.
 
 ```javascript
-var input = local.prompt('Are you sure you want to continue? [yes]');
+var input = transport.prompt('Are you sure you want to continue? [yes]');
 if(input.indexOf('yes') === -1) {
-    local.abort('user canceled flight');
+    transport.abort('user canceled flight');
 }
 
 // prompt for password (with UNIX-style hidden input)
-var password = local.prompt('Enter your password:', { hidden: true });
+var password = transport.prompt('Enter your password:', { hidden: true });
 ```
 
 ### transport.silent()
