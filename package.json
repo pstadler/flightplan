@@ -33,7 +33,8 @@
     "fibers": "~1.0.1",
     "ssh2": "~0.2.17",
     "colors": "~0.6.2",
-    "commander": "~2.1.0"
+    "commander": "~2.1.0",
+    "prompt": "~0.2.12"
   },
   "devDependencies": {
     "gulp": "~3.5.2",

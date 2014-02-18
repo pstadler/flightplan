@@ -378,6 +378,18 @@ is formatted correctly within the current context.
 transport.log('Copying files to remote hosts');
 ```
 
+Prompt for user input.
+
+```javascript
+var input = local.prompt('Are you sure you want to continue? [yes]');
+if(input.indexOf('yes') === -1) {
+    local.abort('user canceled flight');
+}
+
+// prompt for password (hide input UNIX style)
+var password = local.prompt('Enter your password:', { hidden: true });
+```
+
 ### transport.silent()
 
 When calling `silent()` all subsequent commands are executed without
@@ -432,8 +444,9 @@ remote.ls('foo'); // ls: foo: No such file or directory
 
 ### transport.debug(message)
 
-Print a debug message to stdout. Flightplan takes care that the message
-is formatted correctly within the current context.
+Print a debug message to stdout if debug mode is enabled. Flightplan
+takes care that the message is formatted correctly within the current
+context.
 
 ```javascript
 remote.debug('Copying files to remote hosts');
