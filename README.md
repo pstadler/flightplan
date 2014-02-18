@@ -378,6 +378,8 @@ is formatted correctly within the current context.
 transport.log('Copying files to remote hosts');
 ```
 
+### transport.prompt(message[, options]) → input 
+
 Prompt for user input.
 
 ```javascript
@@ -386,7 +388,7 @@ if(input.indexOf('yes') === -1) {
     local.abort('user canceled flight');
 }
 
-// prompt for password (hide input UNIX style)
+// prompt for password (with UNIX-style hidden input)
 var password = local.prompt('Enter your password:', { hidden: true });
 ```
 

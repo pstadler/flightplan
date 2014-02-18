@@ -1,7 +1,7 @@
 {
   "name": "flightplan",
   "description": "Run a sequence of commands against local and remote hosts",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "author": "Patrick Stadler <patrick.stadler@gmail.com>",
   "keywords": [
     "deploy",
@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "gulp": "~3.5.2",
-    "gulp-jshint": "~1.4.0",
+    "gulp-jshint": "~1.4.2",
     "jshint-stylish": "~0.1.5",
     "markdox": "~0.1.2"
   },
