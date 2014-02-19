@@ -426,7 +426,7 @@ non-zero exit code.
 ```javascript
 transport.failsafe();
 transport.ls('foo'); // ls: foo: No such file or directory
-remote.log('Previous command failed, but flight was not aborted');
+transport.log('Previous command failed, but flight was not aborted');
 ```
 
 ### transport.unsafe()
@@ -436,11 +436,11 @@ The flight will be aborted if a subsequent command fails (i.e. returns
 a non-zero exit code). This is the default behavior.
 
 ```javascript
-remote.failsafe();
-remote.ls('foo'); // ls: foo: No such file or directory
-remote.log('Previous command failed, but flight was not aborted');
-remote.unsafe();
-remote.ls('foo'); // ls: foo: No such file or directory
+transport.failsafe();
+transport.ls('foo'); // ls: foo: No such file or directory
+transport.log('Previous command failed, but flight was not aborted');
+transport.unsafe();
+transport.ls('foo'); // ls: foo: No such file or directory
 // flight aborted
 ```
 
@@ -451,7 +451,7 @@ takes care that the message is formatted correctly within the current
 context.
 
 ```javascript
-remote.debug('Copying files to remote hosts');
+transport.debug('Copying files to remote hosts');
 ```
 
 ### transport.abort([message])
@@ -461,7 +461,7 @@ flights from being executed. An optional message can be passed which
 is displayed after the flight has been aborted.
 
 ```javascript
-remote.abort('Severe turbulences over the atlantic ocean!');
+transport.abort('Severe turbulences over the atlantic ocean!');
 ```
 
 <!-- End lib/transport/transport.js -->
