@@ -65,7 +65,7 @@ plan.local(function(local) {
 // run commands on remote hosts (destinations)
 plan.remote(function(remote) {
   remote.log('Move folder to web root');
-  remote.sudo('cp -R /tmp/' + tmpDir + ' ~/pstadler-sh', {user: 'www'});
+  remote.sudo('cp -R /tmp/' + tmpDir + ' ~', {user: 'www'});
   remote.rm('-rf /tmp/' + tmpDir);
 
   remote.log('Install dependencies');
@@ -151,7 +151,7 @@ plan.local(function(transport) {});
 // ...
 ```
 
-### flightplan.briefing(config) → this 
+### flightplan.briefing(config) → this
 
 Configure the flightplan's destinations with `briefing()`. Without a
 proper briefing you can't do remote flights which require at
@@ -194,7 +194,7 @@ the `-u|--username` option:
 fly production --username=admin
 ```
 
-### flightplan.local(fn) → this 
+### flightplan.local(fn) → this
 
 Calling this method registers a local flight. Local flights are
 executed on your local host. When `fn` gets called a `Transport` object
@@ -206,7 +206,7 @@ plan.local(function(local) {
 });
 ```
 
-### flightplan.remote(fn) → this 
+### flightplan.remote(fn) → this
 
 Calling this method registers a remote flight. Remote
 flights are executed on the current destination's remote hosts defined
@@ -219,12 +219,12 @@ plan.remote(function(remote) {
 });
 ```
 
-### flightplan.success(fn) → this 
+### flightplan.success(fn) → this
 
 `fn()` is called after the flightplan (and therefore all flights)
 succeeded.
 
-### flightplan.disaster(fn) → this 
+### flightplan.disaster(fn) → this
 
 `fn()` is called after the flightplan was aborted.
 
@@ -232,7 +232,7 @@ succeeded.
 
 `fn()` is called at the very end of the flightplan's execution.
 
-### flightplan.isAborted() → Boolean 
+### flightplan.isAborted() → Boolean
 
 Whether the flightplan is aborted or not.
 
@@ -324,7 +324,7 @@ transport.sudo('echo Hello world', {user: 'www'});
 transport.sudo('echo Hello world', {user: 'www', silent: true, failsafe: true});
 ```
 
-### transport.transfer(files, remoteDir[, options]) → [results] 
+### transport.transfer(files, remoteDir[, options]) → [results]
 
 Copy a list of files to the current destination's remote host(s) using
 `rsync` with the SSH protocol. File transfers are executed in parallel.
@@ -374,7 +374,7 @@ is formatted correctly within the current context.
 transport.log('Copying files to remote hosts');
 ```
 
-### transport.prompt(message[, options]) → input 
+### transport.prompt(message[, options]) → input
 
 Prompt for user input.
 
