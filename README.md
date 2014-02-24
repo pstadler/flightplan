@@ -29,52 +29,52 @@ var plan = new Flightplan();
 
 // configuration
 plan.briefing({
-	debug: false,
-	destinations: {
-		'staging': {
-			host: 'staging.pstadler.sh',
-			username: 'pstadler',
-			agent: process.env.SSH_AUTH_SOCK
-		},
-		'production': [
-			{
-				host: 'www1.pstadler.sh',
-				username: 'pstadler',
-				agent: process.env.SSH_AUTH_SOCK
-			},
-			{
-				host: 'www2.pstadler.sh',
-				username: 'pstadler',
-				agent: process.env.SSH_AUTH_SOCK
-			}
-		]
-	}
+  debug: false,
+  destinations: {
+    'staging': {
+      host: 'staging.pstadler.sh',
+      username: 'pstadler',
+      agent: process.env.SSH_AUTH_SOCK
+    },
+    'production': [
+      {
+        host: 'www1.pstadler.sh',
+        username: 'pstadler',
+        agent: process.env.SSH_AUTH_SOCK
+      },
+      {
+        host: 'www2.pstadler.sh',
+        username: 'pstadler',
+        agent: process.env.SSH_AUTH_SOCK
+      }
+    ]
+  }
 });
 
 // run commands on localhost
 plan.local(function(local) {
-	local.log('Run build');
-	local.exec('gulp build');
+  local.log('Run build');
+  local.exec('gulp build');
 
-	local.log('Copy files to remote hosts');
-	var filesToCopy = local.exec('git ls-files', {silent: true});
-	// rsync `filesToCopy` to all the destination's hosts
-	local.transfer(filesToCopy, '/tmp/' + tmpDir);
+  local.log('Copy files to remote hosts');
+  var filesToCopy = local.exec('git ls-files', {silent: true});
+  // rsync files to all the destination's hosts
+  local.transfer(filesToCopy, '/tmp/' + tmpDir);
 });
 
 // run commands on remote hosts (destinations)
 plan.remote(function(remote) {
-	remote.log('Move folder to web root');
-	remote.sudo('cp -R /tmp/' + tmpDir + ' ~', { user: 'www' });
-	remote.rm('-rf /tmp/' + tmpDir);
+  remote.log('Move folder to web root');
+  remote.sudo('cp -R /tmp/' + tmpDir + ' ~/pstadler-sh', {user: 'www'});
+  remote.rm('-rf /tmp/' + tmpDir);
 
-	remote.log('Install dependencies');
-	remote.sudo('npm --production --silent --prefix ~/'
-					+ tmpDir + ' install ~/' + tmpDir, { user: 'www' });
+  remote.log('Install dependencies');
+  remote.sudo('npm --production --prefix ~/pstadler-sh'
+                            + ' install ~/pstadler-sh', {user: 'www'});
 
-	remote.log('Reload application');
-	remote.sudo('ln -snf ~/' + tmpDir + ' ~/pstadler-sh', { user: 'www' });
-	remote.sudo('pm2 reload pstadler-sh', { user: 'www' });
+  remote.log('Reload application');
+  remote.sudo('ln -snf ~/' + tmpDir + ' ~/pstadler-sh', {user: 'www'});
+  remote.sudo('pm2 reload pstadler-sh', {user: 'www'});
 });
 
 // run more commands on localhost afterwards
@@ -83,16 +83,13 @@ plan.local(function(local) { /* ... */ });
 plan.remote(function(remote) { /* ... */ });
 
 // executed if flightplan succeeded
-plan.success(function() {
-});
+plan.success(function() { /* ... */ });
 
 // executed if flightplan failed
-plan.disaster(function() {
-});
+plan.disaster(function() { /* ... */ });
 
 // always executed after flightplan finished
-plan.debriefing(function() {
-});
+plan.debriefing(function() { /* ... */ });
 ```
 
 # Documentation
@@ -121,7 +118,7 @@ Commands in local flights are executed on the **local host**.
 
 ```javascript
 plan.local(function(transport) {
-    transport.hostname(); // prints the hostname of the local host
+  transport.hostname(); // prints the hostname of the local host
 });
 ```
 
@@ -132,7 +129,7 @@ remote hosts defined during the briefing.
 
 ```javascript
 plan.remote(function(transport) {
-    transport.hostname(); // prints the hostname(s) of the remote host(s)
+  transport.hostname(); // prints the hostname(s) of the remote host(s)
 });
 ```
 
@@ -165,28 +162,28 @@ method of [mscdex/ssh2](https://github.com/mscdex/ssh2#connection-methods).
 
 ```javascript
 plan.briefing({
-    destinations: {
-        // run with `fly staging`
-        'staging': {
-            // see: https://github.com/mscdex/ssh2#connection-methods
-            host: 'staging.pstadler.sh',
-            username: 'pstadler',
-            agent: process.env.SSH_AUTH_SOCK
-        },
-        // run with `fly production`
-        'production': [
-            {
-                host: 'www1.pstadler.sh',
-                username: 'pstadler',
-                agent: process.env.SSH_AUTH_SOCK
-            },
-            {
-                host: 'www2.pstadler.sh',
-                username: 'pstadler',
-                agent: process.env.SSH_AUTH_SOCK
-            },
-        ]
-    }
+  destinations: {
+    // run with `fly staging`
+    'staging': {
+      // see: https://github.com/mscdex/ssh2#connection-methods
+      host: 'staging.pstadler.sh',
+      username: 'pstadler',
+      agent: process.env.SSH_AUTH_SOCK
+    },
+    // run with `fly production`
+    'production': [
+      {
+        host: 'www1.pstadler.sh',
+        username: 'pstadler',
+        agent: process.env.SSH_AUTH_SOCK
+      },
+      {
+        host: 'www2.pstadler.sh',
+        username: 'pstadler',
+        agent: process.env.SSH_AUTH_SOCK
+      },
+    ]
+  }
 });
 ```
 
@@ -205,7 +202,7 @@ is passed with the first argument.
 
 ```javascript
 plan.local(function(local) {
-    local.echo('hello from your localhost.');
+  local.echo('hello from your localhost.');
 });
 ```
 
@@ -218,7 +215,7 @@ with the first argument.
 
 ```javascript
 plan.remote(function(remote) {
-    remote.echo('hello from the remote host.');
+  remote.echo('hello from the remote host.');
 });
 ```
 
@@ -239,14 +236,13 @@ succeeded.
 
 Whether the flightplan is aborted or not.
 
-### flightplan.abort([message])
+### flightplan.abort()
 
 Calling this method will abort the flightplan and prevent any further
-flights from being executed. An optional message can be passed which
-will be displayed after the flightplan has been aborted.
+flights from being executed.
 
 ```javascript
-plan.abort('Severe turbulences over the atlantic ocean!');
+plan.abort();
 ```
 
 <!-- End lib/flightplan.js -->
@@ -263,11 +259,11 @@ expose the same set of methods as described in this section.
 
 ```javascript
 plan.local(function(local) {
-    local.echo('ShellTransport.echo() called');
+  local.echo('ShellTransport.echo() called');
 });
 
 plan.local(function(remote) {
-    remote.echo('SSHTransport.echo() called');
+  remote.echo('SSHTransport.echo() called');
 });
 ```
 
@@ -385,7 +381,7 @@ Prompt for user input.
 ```javascript
 var input = transport.prompt('Are you sure you want to continue? [yes]');
 if(input.indexOf('yes') === -1) {
-    transport.abort('user canceled flight');
+  transport.abort('user canceled flight');
 }
 
 // prompt for password (with UNIX-style hidden input)
