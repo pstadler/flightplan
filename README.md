@@ -324,9 +324,8 @@ transport.sudo('echo Hello world', {user: 'www'});
 transport.sudo('echo Hello world', {user: 'www', silent: true, failsafe: true});
 ```
 
-Flightplan's sudo is opinionated regarding the setup on your host. In
-order to make things work on a typical Ubuntu installation, follow these
-rules:
+Flightplan's `sudo()` requires as certain setup on your host. In order to
+make things work on a typical Ubuntu installation, follow these rules:
 
 ```bash
 # Scenario:
