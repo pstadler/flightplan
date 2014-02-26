@@ -324,6 +324,29 @@ transport.sudo('echo Hello world', {user: 'www'});
 transport.sudo('echo Hello world', {user: 'www', silent: true, failsafe: true});
 ```
 
+Flightplan's sudo is opinionated regarding the setup on your host. In
+order to make things work on a typical Ubuntu installation, follow these
+rules:
+
+```bash
+# Scenario:
+# 'pstadler' is the user for connecting to the host and 'www' is the user
+# under which you want to execute commands with sudo.
+
+# 1. 'pstadler' has to be in the sudo group:
+$ groups pstadler
+pstadler : pstadler sudo
+
+# 2. 'pstadler' needs to be able to run sudo -u 'www' without a password.
+# In order to do this, add the following line to /etc/sudoers:
+pstadler ALL=(www) NOPASSWD: ALL
+
+# 3. user 'www' needs to have a login shell (e.g. bash, sh, zsh, ...)
+$ cat /etc/passwd | grep www
+www:x:1002:1002::/home/www:/bin/bash   # GOOD
+www:x:1002:1002::/home/www:/bin/false  # BAD
+```
+
 ### transport.transfer(files, remoteDir[, options]) → [results]
 
 Copy a list of files to the current destination's remote host(s) using
