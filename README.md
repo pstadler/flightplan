@@ -429,10 +429,6 @@ var result = transport.waitFor(function(done) {
 console.log(result); // 'sent!'
 ```
 
-```javascript
-var result = trans
-```
-
 ### transport.silent()
 
 When calling `silent()` all subsequent commands are executed without
