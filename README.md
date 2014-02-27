@@ -387,15 +387,6 @@ In this case the latter will be used. If debugging is enabled
 (either with `briefing()` or with `fly --debug`), `rsync` is executed
 in verbose mode (`-v`).
 
-### transport.log(message)
-
-Print a message to stdout. Flightplan takes care that the message
-is formatted correctly within the current context.
-
-```javascript
-transport.log('Copying files to remote hosts');
-```
-
 ### transport.prompt(message[, options]) → input
 
 Prompt for user input.
@@ -408,6 +399,38 @@ if(input.indexOf('yes') === -1) {
 
 // prompt for password (with UNIX-style hidden input)
 var password = transport.prompt('Enter your password:', { hidden: true });
+```
+
+### transport.log(message)
+
+Print a message to stdout. Flightplan takes care that the message
+is formatted correctly within the current context.
+
+```javascript
+transport.log('Copying files to remote hosts');
+```
+
+### transport.waitFor(fn(done)) → mixed
+
+Execute a function and return after the callback `done` is called.
+This is used for running asynchronous functions in a synchronous way.
+
+The callback takes an optional argument which is then returned by
+`waitFor()`.
+
+```javascript
+var result = transport.waitFor(function(done) {
+  require('node-notifier').notify({
+      message: 'Hello World'
+    }, function(err, response) {
+      done(err || 'sent!');
+    });
+});
+console.log(result); // 'sent!'
+```
+
+```javascript
+var result = trans
 ```
 
 ### transport.silent()
