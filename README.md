@@ -114,11 +114,11 @@ two types of flights:
 
 #### Local flights
 
-Commands in local flights are executed on the **local host**.
+Commands in local flights are executed on the **localhost**.
 
 ```javascript
 plan.local(function(transport) {
-  transport.hostname(); // prints the hostname of the local host
+  transport.hostname(); // prints the hostname of localhost
 });
 ```
 
@@ -197,7 +197,7 @@ fly production --username=admin
 ### flightplan.local(fn) → this
 
 Calling this method registers a local flight. Local flights are
-executed on your local host. When `fn` gets called a `Transport` object
+executed on your localhost. When `fn` gets called a `Transport` object
 is passed with the first argument.
 
 ```javascript
@@ -270,6 +270,21 @@ plan.local(function(remote) {
 We call the Transport object `transport` in the following section to avoid
 confusion. However, do yourself a favor and use `local` for local, and
 `remote` for remote flights.
+
+#### Accessing flight-specific information
+
+Flightplan provides information during flights with the `target` properties:
+
+```javascript
+plan.remote(function(transport) { // applies to local flights as well
+  // Flightplan specific information
+  console.log(plan.target.destination); // 'production'
+  console.log(plan.target.hosts); // [{ host: 'www1.pstadler.sh', port: 22 }, ...]
+
+  // Flight specific information
+  console.log(transport.target); // { host: 'www1.pstadler.sh', port: 22 }
+});
+```
 
 ### transport.exec(command[, options]) → code: int, stdout: String, stderr: String
 
@@ -399,6 +414,14 @@ if(input.indexOf('yes') === -1) {
 
 // prompt for password (with UNIX-style hidden input)
 var password = transport.prompt('Enter your password:', { hidden: true });
+
+// prompt when deploying to a specific destination
+if(plan.target.destination === 'production') {
+  var input = transport.prompt('Ready for deploying to production? [yes]');
+  if(input.indexOf('yes') === -1) {
+    transport.abort('user canceled flight');
+  }
+}
 ```
 
 ### transport.log(message)
