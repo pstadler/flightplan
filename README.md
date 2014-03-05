@@ -158,7 +158,9 @@ proper briefing you can't do remote flights which require at
 least one destination. Each destination consists of one ore more hosts.
 
 Values in the hosts section are passed directly to the `connect()`
-method of [mscdex/ssh2](https://github.com/mscdex/ssh2#connection-methods).
+method of [mscdex/ssh2](https://github.com/mscdex/ssh2#connection-methods)
+with one exception: `privateKey` needs to be passed as a string
+containing the path to the keyfile instead of the key itself.
 
 ```javascript
 plan.briefing({
