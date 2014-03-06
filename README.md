@@ -454,6 +454,24 @@ var result = transport.waitFor(function(done) {
 console.log(result); // 'sent!'
 ```
 
+### transport.with(cmd|options[, options], fn)
+
+Execute commands with a certain context.
+
+```javascript
+transport.with('cd /tmp', function() {
+  transport.ls('-al'); // 'cd /tmp &amp;&amp; ls -al'
+});
+
+transport.with({silent: true, failsafe: true}, function() {
+  transport.ls('-al'); // output suppressed, fail safely
+});
+
+transport.with('cd /tmp', {silent: true}, function() {
+  transport.ls('-al'); // 'cd /tmp &amp;&amp; ls -al', output suppressed
+});
+```
+
 ### transport.silent()
 
 When calling `silent()` all subsequent commands are executed without
