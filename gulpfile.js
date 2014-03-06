@@ -29,7 +29,10 @@ gulp.task('docs', function(taskFinished) {
 		var docsStr = fs.readFileSync(tmpFile, 'utf8')
 			, readmeStr = fs.readFileSync(readme, 'utf8');
 
-		docsStr = docsStr.replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+		docsStr = docsStr
+						.replace(/&#39;/g, "'")
+						.replace(/&quot;/g, '"')
+						.replace(/&amp;/g, '&');
 		readmeStr = readmeStr.replace(/(<!-- DOCS -->)(?:\r|\n|.)+(<!-- ENDDOCS -->)/gm
 										, "$1" + docsStr + "$2");
 

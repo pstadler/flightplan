@@ -460,7 +460,7 @@ Execute commands with a certain context.
 
 ```javascript
 transport.with('cd /tmp', function() {
-  transport.ls('-al'); // 'cd /tmp &amp;&amp; ls -al'
+  transport.ls('-al'); // 'cd /tmp && ls -al'
 });
 
 transport.with({silent: true, failsafe: true}, function() {
@@ -468,7 +468,7 @@ transport.with({silent: true, failsafe: true}, function() {
 });
 
 transport.with('cd /tmp', {silent: true}, function() {
-  transport.ls('-al'); // 'cd /tmp &amp;&amp; ls -al', output suppressed
+  transport.ls('-al'); // 'cd /tmp && ls -al', output suppressed
 });
 ```
 
