@@ -69,8 +69,8 @@ plan.remote(function(remote) {
   remote.rm('-rf /tmp/' + tmpDir);
 
   remote.log('Install dependencies');
-  remote.sudo('npm --production --prefix ~/pstadler-sh'
-                            + ' install ~/pstadler-sh', {user: 'www'});
+  remote.sudo('npm --production --prefix ~/' + tmpDir
+                            + ' install ~/' + tmpDir, {user: 'www'});
 
   remote.log('Reload application');
   remote.sudo('ln -snf ~/' + tmpDir + ' ~/pstadler-sh', {user: 'www'});
