@@ -548,10 +548,5 @@ transport.abort('Severe turbulences over the atlantic ocean!');
 
 <!-- ENDDOCS -->
 
-## What's planned?
-
-- Add possibility to define a `sudoUser` per host with `briefing()`.
-- Tests will be implemented with upcoming releases. A part of this will be driven by bug reports.
-
 [npm-url]: https://npmjs.org/package/flightplan
 [npm-image]: https://badge.fury.io/js/flightplan.png
