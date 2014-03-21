@@ -14,7 +14,16 @@ $ npm install -g flightplan
 $ npm install flightplan --save-dev
 
 # run a flightplan (`fly --help` for more information)
-$ fly <destination> [--plan flightplan.js]
+$ fly <destination> [--plan flightplan.(js|coffee)]
+```
+
+By default, the `fly` command will look for `flightplan.js` or `flightplan.coffee`.
+
+If you do not install the Flightplan module locally to your project (i.e. to support non-javascript projects) then make sure the global `node_modules` is in your Node.js path. For example:
+
+```bash
+$ export NODE_PATH=/usr/local/lib/node_modules
+$ fly <destination>
 ```
 
 ## Sample flightplan.js

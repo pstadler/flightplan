@@ -41,6 +41,9 @@
     "prompt": "~0.2.12",
     "pretty-hrtime": "^0.2.1"
   },
+  "optionalDependencies": {
+    "coffee-script": "~1.7.1"
+  },
   "devDependencies": {
     "gulp": "~3.5.2",
     "gulp-jshint": "~1.4.2",
