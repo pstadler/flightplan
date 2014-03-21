@@ -16,8 +16,29 @@ program
 var flightFile = path.join(process.cwd(), program.plan);
 
 if(!fs.existsSync(flightFile)) {
-  logger.error(logger.format('Unable to load %s', program.plan.white));
-  process.exit(1);
+  if (program.plan === 'flightplan.js') {
+    // Maybe using CoffeeScript?
+    program.plan = 'flightplan.coffee';
+    flightFile = path.join(process.cwd(), program.plan);
+    if(!fs.existsSync(flightFile)) {
+      logger.error(logger.format('Unable to load %s (js/coffee)', 'flightplan'.white));
+      process.exit(1);
+    }
+  } else {
+    logger.error(logger.format('Unable to load %s', program.plan.white));
+    process.exit(1);
+  }
+}
+
+if (flightFile.indexOf('.coffee', flightFile.length - 7) !== -1) {
+  try {
+    // Register the CoffeeScript module loader
+    require('coffee-script/register');
+  } catch (err) {
+    logger.error(err);
+    logger.error(logger.format('Unable to load coffee-script for %s', program.plan.white));
+    process.exit(1);
+  }
 }
 
 var flightplan = require(flightFile)
