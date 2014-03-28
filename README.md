@@ -258,7 +258,7 @@ plan.abort();
 
 <!-- End lib/flightplan.js -->
 
-<!-- Start lib/transport/transport.js -->
+<!-- Start lib/transport/index.js -->
 
 ## Transport
 
@@ -273,7 +273,7 @@ plan.local(function(local) {
   local.echo('ShellTransport.echo() called');
 });
 
-plan.local(function(remote) {
+plan.remote(function(remote) {
   remote.echo('SSHTransport.echo() called');
 });
 ```
@@ -553,7 +553,7 @@ is displayed after the flight has been aborted.
 transport.abort('Severe turbulences over the atlantic ocean!');
 ```
 
-<!-- End lib/transport/transport.js -->
+<!-- End lib/transport/index.js -->
 
 <!-- ENDDOCS -->
 

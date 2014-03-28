@@ -30,7 +30,7 @@ gulp.task('lint', function() {
 });
 
 gulp.task('docs', function(taskFinished) {
-  var sources = ['lib/flightplan.js', 'lib/transport/transport.js']
+  var sources = ['lib/flightplan.js', 'lib/transport/index.js']
     , readme = 'README.md'
     , tmpFile = 'docs/API.md';
 
