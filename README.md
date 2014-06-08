@@ -247,15 +247,6 @@ succeeded.
 
 Whether the flightplan is aborted or not.
 
-### flightplan.abort()
-
-Calling this method will abort the flightplan and prevent any further
-flights from being executed.
-
-```javascript
-plan.abort();
-```
-
 <!-- End lib/flightplan.js -->
 
 <!-- Start lib/transport/index.js -->
