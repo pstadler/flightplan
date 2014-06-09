@@ -30,7 +30,7 @@ if(!fs.existsSync(flightFile)) {
   }
 }
 
-if (flightFile.indexOf('.coffee', flightFile.length - 7) !== -1) {
+if (flightFile.indexOf('.coffee', flightFile.length-7) !== -1) {
   try {
     // Register the CoffeeScript module loader
     require('coffee-script/register');
@@ -62,8 +62,8 @@ if(!flightplan.requiresDestination) {
 }
 
 if(!destination && flightplan.requiresDestination()) {
-  logger.error('Please specfiy a destination');
-  program.help();
+  logger.error('Missing destination. Choose one of the following:');
+  console.log('  ' + flightplan.getDestinations().join('\n  ').white);
   process.exit(1);
 }
 
