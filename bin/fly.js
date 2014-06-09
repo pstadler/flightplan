@@ -6,7 +6,7 @@ var path = require('path')
   , version = require('../package.json').version;
 
 program
-  .usage('<destination> [options]')
+  .usage('[task:]destination [options]')
   .version(version)
   .option('-p, --plan <file>', 'path to flightplan (default: flightplan.js)', 'flightplan.js')
   .option('-u, --username <string>', 'user for connecting to remote hosts')
@@ -47,7 +47,14 @@ var flightplan = require(flightFile)
     debug: program.debug || null
   };
 
-var destination = program.args[0];
+var destination = program.args[0]
+  , task = 'default';
+
+if(~(destination || '').indexOf(':')) {
+  var arr = destination.split(':');
+  task = arr[0];
+  destination = arr[1];
+}
 
 if(!flightplan.requiresDestination) {
   logger.error(logger.format('%s is not a valid flightplan', program.plan.white));
@@ -60,4 +67,4 @@ if(!destination && flightplan.requiresDestination()) {
   process.exit(1);
 }
 
-flightplan.start(destination, options);
+flightplan.start(task, destination, options);

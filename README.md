@@ -14,7 +14,7 @@ $ npm install -g flightplan
 $ npm install flightplan --save-dev
 
 # run a flightplan (`fly --help` for more information)
-$ fly <destination> [--plan flightplan.(js|coffee)]
+$ fly [task:]<destination> [--plan flightplan.(js|coffee)]
 ```
 
 By default, the `fly` command will look for `flightplan.js` or `flightplan.coffee`.
@@ -160,6 +160,34 @@ plan.local(function(transport) {});
 // ...
 ```
 
+### Tasks
+Flightplan supports optional tasks to run a subset of flights.
+
+```javascript
+// fly deploy:<destination>
+plan.local('deploy', function(transport) {});
+
+// fly build:<destination>
+plan.local('build', function(transport) {});
+
+// fly deploy:<destination> or...
+// fly build:<destination>
+plan.local(['deploy', 'build'], function(transport) {});
+plan.remote(['deploy', 'build'], function(transport) {});
+```
+
+If no task is specified it's implicitly set to "default". Therefore,
+`fly <destination>` is the same as `fly default:<destination>`.
+
+```javascript
+// fly <destination>
+plan.local(function(transport) {});
+// is the same as...
+plan.local('default', function(transport) {});
+// "default" + other tasks:
+plan.remote(['default', 'deploy', 'build'], function(transport) {});
+```
+
 ### flightplan.briefing(config) → this
 
 Configure the flightplan's destinations with `briefing()`. Without a
@@ -205,7 +233,7 @@ the `-u|--username` option:
 fly production --username=admin
 ```
 
-### flightplan.local(fn) → this
+### flightplan.local([task|tasks, ]fn) → this
 
 Calling this method registers a local flight. Local flights are
 executed on your localhost. When `fn` gets called a `Transport` object
@@ -217,7 +245,10 @@ plan.local(function(local) {
 });
 ```
 
-### flightplan.remote(fn) → this
+An optional first parameter of type Array or String can be passed for
+defining the flight's task(s).
+
+### flightplan.remote([task|tasks, ]fn) → this
 
 Calling this method registers a remote flight. Remote
 flights are executed on the current destination's remote hosts defined
@@ -229,6 +260,9 @@ plan.remote(function(remote) {
   remote.echo('hello from the remote host.');
 });
 ```
+
+An optional first parameter of type Array or String can be passed for
+defining the flight's task(s).
 
 ### flightplan.success(fn) → this
 

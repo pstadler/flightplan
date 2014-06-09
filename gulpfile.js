@@ -44,6 +44,8 @@ gulp.task('docs', function(taskFinished) {
       , readmeStr = fs.readFileSync(readme, 'utf8');
 
     docsStr = docsStr
+                .replace(/&lt;/g, "<")
+                .replace(/&gt;/g, ">")
                 .replace(/&#39;/g, "'")
                 .replace(/&quot;/g, '"')
                 .replace(/&amp;/g, '&');
