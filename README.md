@@ -233,7 +233,7 @@ the `-u|--username` option:
 fly production --username=admin
 ```
 
-### flightplan.local([task|tasks, ]fn) → this
+### flightplan.local([tasks, ]fn) → this
 
 Calling this method registers a local flight. Local flights are
 executed on your localhost. When `fn` gets called a `Transport` object
@@ -248,7 +248,7 @@ plan.local(function(local) {
 An optional first parameter of type Array or String can be passed for
 defining the flight's task(s).
 
-### flightplan.remote([task|tasks, ]fn) → this
+### flightplan.remote([tasks, ]fn) → this
 
 Calling this method registers a remote flight. Remote
 flights are executed on the current destination's remote hosts defined
@@ -314,6 +314,7 @@ Flightplan provides information during flights with the `target` properties:
 ```javascript
 plan.remote(function(transport) { // applies to local flights as well
   // Flightplan specific information
+  console.log(plan.target.task); // 'default'
   console.log(plan.target.destination); // 'production'
   console.log(plan.target.hosts); // [{ host: 'www1.pstadler.sh', port: 22 }, ...]
 
