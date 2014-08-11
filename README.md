@@ -437,7 +437,7 @@ local.transfer(files, '/tmp/foo');
 `briefing()` unless `fly` is called with the `-u|--username` option.
 In this case the latter will be used. If debugging is enabled
 (either with `briefing()` or with `fly --debug`), `rsync` is executed
-in verbose mode (`-v`).
+in verbose mode (`-vv`).
 
 ### transport.prompt(message[, options]) → input
 
