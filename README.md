@@ -1,4 +1,4 @@
-# Flightplan ✈ [![NPM version][npm-image]][npm-url]
+# Flightplan ✈ [![NPM version][npm-version-image]][npm-url] [![NPM downloads][npm-downloads-image]][npm-url] [![MIT License][license-image]][license-url]
 
 Run a sequence of commands against local and remote hosts.
 
@@ -584,4 +584,8 @@ transport.abort('Severe turbulences over the atlantic ocean!');
 <!-- ENDDOCS -->
 
 [npm-url]: https://npmjs.org/package/flightplan
-[npm-image]: https://badge.fury.io/js/flightplan.png
+[npm-version-image]: http://img.shields.io/npm/v/flightplan.svg?style=flat-square
+[npm-downloads-image]: http://img.shields.io/npm/dm/flightplan.svg?style=flat-square
+
+[license-url]: LICENSE
+[license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
