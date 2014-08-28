@@ -350,6 +350,19 @@ transport.ls('-al foo', {silent: true, failsafe: true});
 To apply these options to multiple commands check out the docs of
 `transport.silent()` and `transport.failsafe()`.
 
+#### Advanced options
+Flightplan uses `child_process#exec()` for executing local commands and
+`mscdex/ssh2#exec()` for remote commands. Options passed with `exec` will
+be forwarded to either of these.
+
+```javascript
+// increase maxBuffer for child_process#exec()
+local.ls('-al', {exec: {maxBuffer: 2000*1024}});
+
+// enable pty for mscdex/ssh2#exec()
+remote.ls('-al', {exec: {pty: true}});
+```
+
 #### Return value
 Each command returns an object containing `code`, `stdout` and`stderr`:
 
