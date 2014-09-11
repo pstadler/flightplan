@@ -592,6 +592,46 @@ is displayed after the flight has been aborted.
 transport.abort('Severe turbulences over the atlantic ocean!');
 ```
 
+## Options
+
+Sometime you want to define some options when running flightplan. This can
+eg. be branch name or build number when from build system. But really anywhing.
+
+To use options add them when running fly
+
+```bash
+fly -o <variable>=<value> --option <var1>=<value2> <task>:<destenation>
+
+fly -o build=1234 -o branch=develop
+```
+
+The will be published in `host.env` the same way as with --username end up at
+host.username .
+
+```javascript
+
+plan.local(function(transport) {
+
+  if (plan.env.build) {
+    transport.echo('Will run with build number: ' + plan.env.build);
+
+});
+
+plan.remote(function(transport) {
+
+  if (plan.env.branch == "master") {
+    transport.echo("Will do the deploy to production!");
+    deploy_to_production();
+
+  } else {
+    transport.echo("Will deploy to development environment: " + host.env.branch);
+    deploy_to(host.env.branch);
+  }
+
+});
+```
+
+
 <!-- End lib/transport/index.js -->
 
 <!-- ENDDOCS -->
