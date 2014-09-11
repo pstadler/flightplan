@@ -5,12 +5,21 @@ var path = require('path')
   , logger = new (require('../lib/logger'))()
   , version = require('../package.json').version;
 
+
+function collect(val, memo) {
+  var param =  val.split('=');
+  memo[param[0]] = param[1];
+  return memo;
+}
+
+
 program
   .usage('[task:]destination [options]')
   .version(version)
   .option('-p, --plan <file>', 'path to flightplan (default: flightplan.js)', 'flightplan.js')
   .option('-u, --username <string>', 'user for connecting to remote hosts')
   .option('-d, --debug', 'enable debug mode')
+  .option('-o, --option <var>=<value>', 'Add an option to the flightplan', collect, {})
   .parse(process.argv);
 
 var flightFile = path.join(process.cwd(), program.plan);
@@ -44,7 +53,8 @@ if (flightFile.indexOf('.coffee', flightFile.length-7) !== -1) {
 var flightplan = require(flightFile)
   , options = {
     username: program.username || null,
-    debug: program.debug || null
+    debug: program.debug || null,
+    env: program.option || null
   };
 
 var destination = program.args[0]
@@ -55,6 +65,7 @@ if(~(destination || '').indexOf(':')) {
   task = arr[0];
   destination = arr[1];
 }
+
 
 if(!flightplan.requiresDestination) {
   logger.error(logger.format('%s is not a valid flightplan', program.plan.white));
