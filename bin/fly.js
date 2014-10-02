@@ -11,7 +11,10 @@ program
   .option('-p, --plan <file>', 'path to flightplan (default: flightplan.js)', 'flightplan.js')
   .option('-u, --username <string>', 'user for connecting to remote hosts')
   .option('-d, --debug', 'enable debug mode')
+  .option('-C, --no-color', 'disable output coloring')
   .parse(process.argv);
+
+logger.enableColor(program.color);
 
 var flightFile = path.join(process.cwd(), program.plan);
 
