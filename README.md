@@ -14,7 +14,7 @@ $ npm install -g flightplan
 $ npm install flightplan --save-dev
 
 # run a flightplan (`fly --help` for more information)
-$ fly [task:]<destination> [--plan flightplan.(js|coffee)]
+$ fly [task:]<target> [--plan flightplan.(js|coffee)]
 ```
 
 By default, the `fly` command will look for `flightplan.js` or `flightplan.coffee`.
@@ -61,11 +61,11 @@ plan.local(function(local) {
 
   local.log('Copy files to remote hosts');
   var filesToCopy = local.exec('git ls-files', {silent: true});
-  // rsync files to all the destination's hosts
+  // rsync files to all the target's remote hosts
   local.transfer(filesToCopy, '/tmp/' + tmpDir);
 });
 
-// run commands on remote hosts (destinations)
+// run commands on the target's remote hosts
 plan.remote(function(remote) {
   remote.log('Move folder to web root');
   remote.sudo('cp -R /tmp/' + tmpDir + ' ~', {user: 'www'});
