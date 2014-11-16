@@ -435,7 +435,7 @@ Prompt for user input.
 ```javascript
 var input = transport.prompt('Are you sure you want to continue? [yes]');
 if(input.indexOf('yes') === -1) {
-  plan.abort('user canceled flight');
+  plan.abort('User canceled flight');
 }
 
 // prompt for password (with UNIX-style hidden input)
@@ -459,7 +459,7 @@ The callback takes an optional argument which is then returned by
 `waitFor()`.
 
 ```javascript
-transport.waitFor(function(done) {
+var result = transport.waitFor(function(done) {
   require('node-notifier').notify({
       message: 'Hello World'
     }, function(err, response) {
