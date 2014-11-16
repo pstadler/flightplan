@@ -1,4 +1,18 @@
 <? docfiles.forEach(function(doc) { ?>
+  <? doc.javadoc.forEach(function(comment) { -?>
+    <? if (!comment.ignore) { -?>
+      <? if (comment.name) { -?>
+        <? if (comment.isMethod || comment.isFunction) { -?>
+          * [<?= comment.name ?>](#<?= encodeURIComponent(doc.javadoc[0].name.toLowerCase() + '.' + comment.name) ?>)
+        <? } else { -?>
+          [<?= comment.name ?>](#<?= encodeURIComponent(comment.name) ?>)
+        <? } -?>
+      <? } -?>
+    <? } -?>
+  <? }) -?>
+<? }) ?>
+
+<? docfiles.forEach(function(doc) { ?>
 
   <!-- Start <?= doc.filename ?> -->
 
@@ -6,14 +20,15 @@
     <? if (!comment.ignore) { ?>
       <? if (comment.name) { ?>
         <? if (comment.isMethod || comment.isFunction) { ?>
-          ### <?= doc.javadoc[0].name.toLowerCase() ?>.<?= comment.name -?>
+          ### <a name="#<?= encodeURIComponent(doc.javadoc[0].name.toLowerCase() + '.' + comment.name) -?>"></a>
+          <?= doc.javadoc[0].name.toLowerCase() ?>.<?= comment.name -?>
           <? if (comment.returnTags.length > 0) { -?> →
             <? comment.returnTags.forEach(function(returnTag) { -?>
               <?= ' ' + returnTag.joinedTypes ?><?= ' ' + returnTag.description ?>
             <? }) ?>
           <? } ?>
         <? } else { ?>
-          ## <?= comment.name ?>
+          ## <a name="#<?= encodeURIComponent(comment.name) ?>"></a><?= comment.name ?>
         <? } ?>
       <? } ?>
 
