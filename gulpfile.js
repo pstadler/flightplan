@@ -8,29 +8,31 @@ var sourceFiles = ['*.js', 'lib/**/*.js', 'bin/**/*.js'];
 
 gulp.task('lint', function() {
   var jshintOptions = {
+    node: true,
     laxcomma: true,
     laxbreak: true,
-    node: true,
     curly: true,
     camelcase: true,
     eqeqeq: true,
     maxdepth: 3,
     maxlen: 100,
+    nonew: true,
     newcap: true,
     noempty: true,
     latedef: true,
     noarg: true,
     unused: true,
     trailing: true,
+    nonbsp: true,
     indent: 2
   };
   return gulp.src(sourceFiles)
-          .pipe(jshint(jshintOptions))
-          .pipe(jshint.reporter(stylish));
+    .pipe(jshint(jshintOptions))
+    .pipe(jshint.reporter(stylish));
 });
 
-gulp.task('docs', function(taskFinished) {
-  var sources = ['lib/flightplan.js', 'lib/transport/index.js']
+gulp.task('docs', function(done) {
+  var sources = ['lib/index.js', 'lib/transport/index.js']
     , readme = 'README.md'
     , tmpFile = 'docs/API.md';
 
@@ -44,18 +46,20 @@ gulp.task('docs', function(taskFinished) {
       , readmeStr = fs.readFileSync(readme, 'utf8');
 
     docsStr = docsStr
-                .replace(/&lt;/g, "<")
-                .replace(/&gt;/g, ">")
-                .replace(/&#39;/g, "'")
-                .replace(/&quot;/g, '"')
-                .replace(/&amp;/g, '&');
-    readmeStr = readmeStr.replace(/(<!-- DOCS -->)(?:\r|\n|.)+(<!-- ENDDOCS -->)/gm
-                                                                          , "$1" + docsStr + "$2");
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&#39;/g, "'")
+      .replace(/&quot;/g, '"')
+      .replace(/&amp;/g, '&');
+
+    readmeStr = readmeStr
+      .replace(/(<!-- DOCS -->)(?:\r|\n|.)+(<!-- ENDDOCS -->)/gm,
+                "$1" + docsStr + "$2");
 
     fs.writeFileSync(readme, readmeStr);
     fs.unlinkSync(tmpFile);
     console.log('Documentation generated.');
-    taskFinished();
+    done();
   });
 });
 

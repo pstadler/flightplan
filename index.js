@@ -1,1 +1,1 @@
-module.exports = require('./lib/flightplan');
+module.exports = require('./lib');

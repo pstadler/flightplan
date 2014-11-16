@@ -1,7 +1,7 @@
 {
   "name": "flightplan",
   "description": "Library for streamlining application deployment or systems administration tasks",
-  "version": "0.4.5",
+  "version": "0.5.0",
   "author": "Patrick Stadler <patrick.stadler@gmail.com>",
   "keywords": [
     "deploy",
@@ -11,7 +11,7 @@
     "exec",
     "shell",
     "ssh",
-    "task",
+    "tasks",
     "parallel",
     "sequential",
     "remote",
@@ -34,22 +34,23 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "colors": "~0.6.2",
-    "commander": "~2.1.0",
-    "fibers": "~1.0.1",
-    "pretty-hrtime": "~0.2.1",
-    "prompt": "~0.2.12",
-    "ssh2": "~0.2.17",
-    "temp-write": "~0.3.1"
+    "byline": "^4.1.1",
+    "chalk": "^0.5.1",
+    "fibers": "^1.0.2",
+    "liftoff": "^0.13.6",
+    "minimist": "^1.1.0",
+    "pretty-hrtime": "^0.2.2",
+    "prompt": "^0.2.14",
+    "ssh2": "^0.3.6",
+    "temp-write": "^1.1.0",
+    "util-extend": "^1.0.1",
+    "v8flags": "^1.0.1"
   },
-  "optionalDependencies": {
-    "coffee-script": "~1.7.1"
-  },
+  "license": "MIT",
   "devDependencies": {
-    "gulp": "~3.5.2",
-    "gulp-jshint": "~1.4.2",
-    "jshint-stylish": "~0.1.5",
-    "markdox": "~0.1.2"
-  },
-  "license": "MIT"
+    "gulp": "^3.8.10",
+    "gulp-jshint": "^1.9.0",
+    "jshint-stylish": "^1.0.0",
+    "markdox": "^0.1.7"
+  }
 }

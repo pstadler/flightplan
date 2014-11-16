@@ -1,73 +1,91 @@
 #!/usr/bin/env node
-var path = require('path')
-  , fs = require('fs')
-  , program = require('commander')
-  , logger = new (require('../lib/logger'))()
-  , version = require('../package.json').version;
 
-program
-  .usage('[task:]destination [options]')
-  .version(version)
-  .option('-p, --plan <file>', 'path to flightplan (default: flightplan.js)', 'flightplan.js')
-  .option('-u, --username <string>', 'user for connecting to remote hosts')
-  .option('-d, --debug', 'enable debug mode')
-  .option('-C, --no-color', 'disable output coloring')
-  .parse(process.argv);
+var Liftoff = require('liftoff')
+  , v8flags = require('v8flags')
+  , logger = require('../lib/logger')()
+  , cliPackage = require('../package')
+  , argv = require('minimist')(process.argv.slice(2));
 
-logger.enableColor(program.color);
+var cli = new Liftoff({
+  name: 'flightplan',
+  processTitle: 'Flightplan',
+  configName: 'flightplan',
+  extensions: {
+    '.js': null,
+    '.coffee': 'coffee-script/register'
+  },
+  nodeFlags: v8flags.fetch()
+});
 
-var flightFile = path.join(process.cwd(), program.plan);
+// Handle positional args
+var task = 'default';
+var target = argv._.length ? argv._[0] : null;
 
-if(!fs.existsSync(flightFile)) {
-  if (program.plan === 'flightplan.js') {
-    // Maybe using CoffeeScript?
-    program.plan = 'flightplan.coffee';
-    flightFile = path.join(process.cwd(), program.plan);
-    if(!fs.existsSync(flightFile)) {
-      logger.error(logger.format('Unable to load %s (js/coffee)', 'flightplan'.white));
-      process.exit(1);
+if(target && target.indexOf(':') !== -1) {
+  target = target.split(':');
+  task = target[0];
+  target = target[1];
+}
+
+// Handle optional args
+var optionalArgs = {
+  file:     ['p', 'plan'],
+  username: ['u', 'username'],
+  debug:    ['d', 'debug'],
+  version:  ['v', 'version'],
+  help:     ['h', 'help']
+};
+
+var options = {};
+Object.keys(optionalArgs).forEach(function(opt) {
+  optionalArgs[opt].forEach(function(variant) {
+    if(argv[variant]) {
+      options[opt] = argv[variant];
+      return false;
     }
-  } else {
-    logger.error(logger.format('Unable to load %s', program.plan.white));
+  });
+});
+
+if(options.help) {
+  var out = '\n' +
+    '  Usage: fly [task:]target [options]\n\n' +
+    '  Options:\n\n'  +
+    '    -h, --help               show usage information\n' +
+    '    -v, --version            show version number\n' +
+    '    -p, --plan <file>        path to flightplan (default: flightplan.js)\n' +
+    '    -u, --username <string>  user for connecting to remote hosts\n' +
+    '    -d, --debug              enable debug mode\n';
+  console.log(out);
+  process.exit(0);
+}
+
+if(options.version) {
+  console.log(cliPackage.version);
+  process.exit(0);
+}
+
+var invoke = function(env) {
+  if(!target) {
+    logger.error('No target specified');
     process.exit(1);
   }
-}
 
-if (flightFile.indexOf('.coffee', flightFile.length-7) !== -1) {
-  try {
-    // Register the CoffeeScript module loader
-    require('coffee-script/register');
-  } catch (err) {
-    logger.error(err);
-    logger.error(logger.format('Unable to load coffee-script for %s', program.plan.white));
+  if(!env.configPath) {
+    logger.error('flightplan.js not found');
     process.exit(1);
   }
-}
 
-var flightplan = require(flightFile)
-  , options = {
-    username: program.username || null,
-    debug: program.debug || null
-  };
+  if(!env.modulePath) {
+    logger.error('Local flightplan package not found in ' + env.cwd);
+    process.exit(1);
+  }
 
-var destination = program.args[0]
-  , task = 'default';
+  process.chdir(env.configBase);
+  require(env.configPath);
+  var instance = require(env.modulePath);
+  instance.run(task, target, options);
+};
 
-if(~(destination || '').indexOf(':')) {
-  var arr = destination.split(':');
-  task = arr[0];
-  destination = arr[1];
-}
-
-if(!flightplan.requiresDestination) {
-  logger.error(logger.format('%s is not a valid flightplan', program.plan.white));
-  process.exit(1);
-}
-
-if(!destination && flightplan.requiresDestination()) {
-  logger.error('Missing destination. Choose one of the following:');
-  console.log('  ' + flightplan.getDestinations().join('\n  ').white);
-  process.exit(1);
-}
-
-flightplan.start(task, destination, options);
+cli.launch({
+  configPath: options.file
+}, invoke);
