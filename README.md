@@ -211,10 +211,6 @@ the `-u|--username` option:
 fly production --username=admin
 ```
 
-, options
-
-, options: options
-
 ### flightplan.local([tasks, ]fn) → this 
 
 Calling this method registers a local flight. Local flights are
@@ -297,6 +293,41 @@ plan.remote(function(transport) { // applies to local flights as well
 });
 ```
 
+### transport.exec(command[, options]) → code: int, stdout: String, stderr: String
+
+To execute a command you have the choice between using `exec()` or one
+of the handy wrappers for often used commands:
+`transport.exec('ls -al')` is the same as `transport.ls('-al')`. If a
+command returns a non-zero exit code, the flightplan will be aborted and
+all subsequent commands and flights won't get executed.
+
+#### Options
+Options can be passed as a second argument. If `failsafe: true` is
+passed, the command is allowed to fail (i.e. exiting with a non-zero
+exit code), whereas `silent: true` will simply suppress its output.
+
+```javascript
+// output of `ls -al` is suppressed
+transport.ls('-al', {silent: true});
+
+// flightplan continues even if command fails with exit code `1`
+transport.ls('-al foo', {failsafe: true}); // ls: foo: No such file or directory
+
+// both options together
+transport.ls('-al foo', {silent: true, failsafe: true});
+```
+
+To apply these options to multiple commands check out the docs of
+`transport.silent()` and `transport.failsafe()`.
+
+#### Return value
+Each command returns an object containing `code`, `stdout` and`stderr`:
+
+```javascript
+var result = transport.echo('Hello world');
+console.log(result); // { code: 0, stdout: 'Hello world\n', stderr: null }
+```
+
 ### transport.sudo(command[, options]) → code: int, stdout: String, stderr: String
 
 Execute a command as another user with `sudo()`. It has the same
@@ -377,6 +408,136 @@ local.transfer(files, '/tmp/foo');
 In this case the latter will be used. If debugging is enabled
 (either with `briefing()` or with `fly --debug`), `rsync` is executed
 in verbose mode (`-vv`).
+
+### transport.prompt(message[, options]) → input 
+
+Prompt for user input.
+
+```javascript
+var input = transport.prompt('Are you sure you want to continue? [yes]');
+if(input.indexOf('yes') === -1) {
+  plan.abort('user canceled flight');
+}
+
+// prompt for password (with UNIX-style hidden input)
+var password = transport.prompt('Enter your password:', { hidden: true });
+
+// prompt when deploying to a specific target
+if(plan.runtime.target === 'production') {
+  var input = transport.prompt('Ready for deploying to production? [yes]');
+  if(input.indexOf('yes') === -1) {
+    plan.abort('User canceled flight');
+  }
+}
+```
+
+### transport.waitFor(fn(done)) → mixed 
+
+Execute a function and return after the callback `done` is called.
+This is used for running asynchronous functions in a synchronous way.
+
+The callback takes an optional argument which is then returned by
+`waitFor()`.
+
+```javascript
+transport.waitFor(function(done) {
+  require('node-notifier').notify({
+      message: 'Hello World'
+    }, function(err, response) {
+      done(err || 'sent!');
+    });
+});
+console.log(result); // 'sent!'
+```
+
+### transport.with(cmd|options[, options], fn)
+
+Execute commands with a certain context.
+
+```javascript
+transport.with('cd /tmp', function() {
+  transport.ls('-al'); // 'cd /tmp && ls -al'
+});
+
+transport.with({silent: true, failsafe: true}, function() {
+  transport.ls('-al'); // output suppressed, fail safely
+});
+
+transport.with('cd /tmp', {silent: true}, function() {
+  transport.ls('-al'); // 'cd /tmp && ls -al', output suppressed
+});
+```
+
+### transport.silent()
+
+When calling `silent()` all subsequent commands are executed without
+printing their output to stdout until `verbose()` is called.
+
+```javascript
+transport.ls(); // output will be printed to stdout
+transport.silent();
+transport.ls(); // output won't be printed to stdout
+```
+
+### transport.verbose()
+
+Calling `verbose()` reverts the behavior introduced with `silent()`.
+Output of commands will be printed to stdout.
+
+```javascript
+transport.silent();
+transport.ls(); // output won't be printed to stdout
+transport.verbose();
+transport.ls(); // output will be printed to stdout
+```
+
+### transport.failsafe()
+
+When calling `failsafe()`, all subsequent commands are allowed to fail
+until `unsafe()` is called. In other words, the flight will continue
+even if the return code of the command is not `0`. This is helpful if
+either you expect a command to fail or their nature is to return a
+non-zero exit code.
+
+```javascript
+transport.failsafe();
+transport.ls('foo'); // ls: foo: No such file or directory
+transport.log('Previous command failed, but flight was not aborted');
+```
+
+### transport.unsafe()
+
+Calling `unsafe()` reverts the behavior introduced with `failsafe()`.
+The flight will be aborted if a subsequent command fails (i.e. returns
+a non-zero exit code). This is the default behavior.
+
+```javascript
+transport.failsafe();
+transport.ls('foo'); // ls: foo: No such file or directory
+transport.log('Previous command failed, but flight was not aborted');
+transport.unsafe();
+transport.ls('foo'); // ls: foo: No such file or directory
+// flight aborted
+```
+
+### transport.log(message)
+
+Print a message to stdout. Flightplan takes care that the message
+is formatted correctly within the current context.
+
+```javascript
+transport.log('Copying files to remote hosts');
+```
+
+### transport.debug(message)
+
+Print a debug message to stdout if debug mode is enabled. Flightplan
+takes care that the message is formatted correctly within the current
+context.
+
+```javascript
+transport.debug('Copying files to remote hosts');
+```
 
 <!-- End lib/transport/index.js -->
 
