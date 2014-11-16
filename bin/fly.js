@@ -29,11 +29,12 @@ if(target && target.indexOf(':') !== -1) {
 
 // Handle optional args
 var optionalArgs = {
-  file:     ['p', 'plan'],
+  file:     ['f', 'flightplan'],
   username: ['u', 'username'],
   debug:    ['d', 'debug'],
   version:  ['v', 'version'],
-  help:     ['h', 'help']
+  help:     ['h', 'help'],
+  color:    ['no-color']
 };
 
 var options = {};
@@ -52,9 +53,10 @@ if(options.help) {
     '  Options:\n\n'  +
     '    -h, --help               show usage information\n' +
     '    -v, --version            show version number\n' +
-    '    -p, --plan <file>        path to flightplan (default: flightplan.js)\n' +
+    '    -f, --flightplan <file>  path to flightplan (default: flightplan.js)\n' +
     '    -u, --username <string>  user for connecting to remote hosts\n' +
-    '    -d, --debug              enable debug mode\n';
+    '    -d, --debug              enable debug mode\n' +
+    '        --no-color           disable colors in output\n';
   console.log(out);
   process.exit(0);
 }

@@ -14,7 +14,7 @@ $ npm install -g flightplan
 $ npm install flightplan --save-dev
 
 # run a flightplan (`fly --help` for more information)
-$ fly [task:]<target> [--plan flightplan.(js|coffee)]
+$ fly [task:]<target> [--flightplan flightplan.(js|coffee)]
 ```
 
 By default, the `fly` command will look for `flightplan.js` or `flightplan.coffee`.
