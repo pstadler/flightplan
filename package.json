@@ -41,6 +41,7 @@
     "minimist": "^1.1.0",
     "pretty-hrtime": "^0.2.2",
     "prompt": "^0.2.14",
+    "semver": "^4.1.0",
     "ssh2": "^0.3.6",
     "temp-write": "^1.1.0",
     "util-extend": "^1.0.1",

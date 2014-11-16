@@ -2,6 +2,7 @@
 
 var Liftoff = require('liftoff')
   , v8flags = require('v8flags')
+  , semver = require('semver')
   , logger = require('../lib/logger')()
   , cliPackage = require('../package')
   , argv = require('minimist')(process.argv.slice(2));
@@ -68,17 +69,22 @@ if(options.version) {
 
 var invoke = function(env) {
   if(!target) {
-    logger.error('No target specified');
+    logger.error('Error: No target specified');
     process.exit(1);
   }
 
   if(!env.configPath) {
-    logger.error('flightplan.js not found');
+    logger.error('Error: flightplan.js not found');
     process.exit(1);
   }
 
   if(!env.modulePath) {
-    logger.error('Local flightplan package not found in ' + env.cwd);
+    logger.error('Error: Local flightplan package not found in ' + env.cwd);
+    process.exit(1);
+  }
+
+  if(!semver.satisfies(env.modulePackage.version, '>=0.5.0')) {
+    logger.error('Error: local flightplan package version should be >=0.5.0');
     process.exit(1);
   }
 
