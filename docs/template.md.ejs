@@ -3,9 +3,9 @@
     <? if (!comment.ignore) { -?>
       <? if (comment.name) { -?>
         <? if (comment.isMethod || comment.isFunction) { -?>
-          * [<?= comment.name ?>](#<?= encodeURIComponent(doc.javadoc[0].name.toLowerCase() + '.' + comment.name) ?>)
+          * [<?= comment.name ?>](#user-content-<?= encodeURIComponent(doc.javadoc[0].name.toLowerCase() + '.' + comment.name) ?>)
         <? } else { -?>
-          [<?= comment.name ?>](#<?= encodeURIComponent(comment.name) ?>)
+          [<?= comment.name ?>](#user-content-<?= encodeURIComponent(comment.name) ?>)
         <? } -?>
       <? } -?>
     <? } -?>
@@ -20,7 +20,7 @@
     <? if (!comment.ignore) { ?>
       <? if (comment.name) { ?>
         <? if (comment.isMethod || comment.isFunction) { ?>
-          ### <a name="#<?= encodeURIComponent(doc.javadoc[0].name.toLowerCase() + '.' + comment.name) -?>"></a>
+          ### <a name="<?= encodeURIComponent(doc.javadoc[0].name.toLowerCase() + '.' + comment.name) -?>"></a>
           <?= doc.javadoc[0].name.toLowerCase() ?>.<?= comment.name -?>
           <? if (comment.returnTags.length > 0) { -?> →
             <? comment.returnTags.forEach(function(returnTag) { -?>
@@ -28,7 +28,7 @@
             <? }) ?>
           <? } ?>
         <? } else { ?>
-          ## <a name="#<?= encodeURIComponent(comment.name) ?>"></a><?= comment.name ?>
+          ## <a name="<?= encodeURIComponent(comment.name) ?>"></a><?= comment.name ?>
         <? } ?>
       <? } ?>
 
