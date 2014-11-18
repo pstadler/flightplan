@@ -76,8 +76,8 @@ plan.remote(function(remote) {
                             + ' install ~/' + tmpDir, {user: 'www'});
 
   remote.log('Reload application');
-  remote.sudo('ln -snf ~/' + tmpDir + ' ~/pstadler-sh', {user: 'www'});
-  remote.sudo('pm2 reload pstadler-sh', {user: 'www'});
+  remote.sudo('ln -snf ~/' + tmpDir + ' ~/example-com', {user: 'www'});
+  remote.sudo('pm2 reload example-com', {user: 'www'});
 });
 
 // run more commands on localhost afterwards
@@ -298,17 +298,18 @@ confusion. However, do yourself a favor and use `local` for local, and
 
 #### Accessing flight-specific information
 
-Flightplan provides information during flights with the `target` properties:
+Flightplan provides information during flights with the `runtime` properties:
 
 ```javascript
 plan.remote(function(transport) { // applies to local flights as well
   // Flightplan specific information
-  console.log(plan.runtime.task);   // 'default'
-  console.log(plan.runtime.target); // 'production'
-  console.log(plan.runtime.hosts);  // [{ host: 'www1.example.com', port: 22 }, ...]
+  console.log(plan.runtime.task);    // 'default'
+  console.log(plan.runtime.target);  // 'production'
+  console.log(plan.runtime.hosts);   // [{ host: 'www1.example.com', port: 22 }, ...]
+  console.log(plan.runtime.options); // { debug: true, ... }
 
   // Flight specific information
-  console.log(transport.target); // { host: 'www1.example.com', port: 22 }
+  console.log(transport.runtime); // { host: 'www1.example.com', port: 22 }
 });
 ```
 
