@@ -114,8 +114,11 @@ plan.remote(function(remote) { /* ... */ });
 ## <a name="Flightplan"></a>Flightplan
 
 A flightplan is a set of subsequent flights to be executed on one or more
-hosts. The constructor doesn't take any arguments. Configuration is handled
-with the `target()` method.
+hosts. Configuration is handled with the `target()` method.
+
+```javascript
+var plan = require('flightplan');
+```
 
 ### Flights
 A flight is a set of commands to be executed on one or more hosts. There are
