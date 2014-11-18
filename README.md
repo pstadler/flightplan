@@ -4,6 +4,8 @@ Run sequences of commands against local and remote hosts.
 
 Flightplan is a [node.js](http://nodejs.org) library for streamlining application deployment or systems administration tasks, similar to Python's [Fabric](http://fabfile.org).
 
+**Flightplan 0.5.0 has been rewritten from scratch and is not compatible with 0.4.x releases. Read more about what's changed in the [release notes](https://github.com/pstadler/flightplan/releases/tag/0.5.0).**
+
 ## Installation & Usage
 
 ```bash
@@ -299,7 +301,7 @@ We call the Transport object `transport` in the following section to avoid
 confusion. However, do yourself a favor and use `local` for local, and
 `remote` for remote flights.
 
-#### Accessing flight-specific information
+#### Accessing runtime information
 
 Flightplan provides information during flights with the `runtime` properties:
 
