@@ -101,7 +101,7 @@ plan.remote(function(remote) { /* ... */ });
 * [transfer(files, remoteDir[, options])](#user-content-transport.transfer(files%2C%20remoteDir%5B%2C%20options%5D))
 * [prompt(message[, options])](#user-content-transport.prompt(message%5B%2C%20options%5D))
 * [waitFor(fn(done))](#user-content-transport.waitFor(fn(done)))
-* [with(cmd|options[, options], fn)](#user-content-transport.with(cmd%7Coptions%5B%2C%20options%5D%2C%20fn))
+* [with(command|options[, options], fn)](#user-content-transport.with(command%7Coptions%5B%2C%20options%5D%2C%20fn))
 * [silent()](#user-content-transport.silent())
 * [verbose()](#user-content-transport.verbose())
 * [failsafe()](#user-content-transport.failsafe())
@@ -469,7 +469,7 @@ var result = transport.waitFor(function(done) {
 console.log(result); // 'sent!'
 ```
 
-### <a name="transport.with(cmd%7Coptions%5B%2C%20options%5D%2C%20fn)"></a>transport.with(cmd|options[, options], fn)
+### <a name="transport.with(command%7Coptions%5B%2C%20options%5D%2C%20fn)"></a>transport.with(command|options[, options], fn)
 
 Execute commands with a certain context.
 
