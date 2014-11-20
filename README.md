@@ -301,7 +301,7 @@ We call the Transport object `transport` in the following section to avoid
 confusion. However, do yourself a favor and use `local` for local, and
 `remote` for remote flights.
 
-#### Accessing flight-specific information
+#### Accessing runtime information
 
 Flightplan provides information during flights with the `runtime` properties:
 
