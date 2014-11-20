@@ -3,8 +3,9 @@
 var Liftoff = require('liftoff')
   , v8flags = require('v8flags')
   , semver = require('semver')
-  , logger = require('../lib/logger')()
+  , extend = require('util-extend')
   , cliPackage = require('../package')
+  , logger = require('../lib/logger')()
   , argv = require('minimist')(process.argv.slice(2));
 
 var cli = new Liftoff({
@@ -18,18 +19,7 @@ var cli = new Liftoff({
   nodeFlags: v8flags.fetch()
 });
 
-// Handle positional args
-var task = 'default';
-var target = argv._.length ? argv._[0] : null;
-
-if(target && target.indexOf(':') !== -1) {
-  target = target.split(':');
-  task = target[0];
-  target = target[1];
-}
-
-// Handle optional args
-var optionalArgs = {
+var argumentAliases = {
   file:     ['f', 'flightplan'],
   username: ['u', 'username'],
   debug:    ['d', 'debug'],
@@ -38,17 +28,41 @@ var optionalArgs = {
   color:    ['no-color']
 };
 
-var options = {};
-Object.keys(optionalArgs).forEach(function(opt) {
-  optionalArgs[opt].forEach(function(variant) {
-    if(argv[variant]) {
-      options[opt] = argv[variant];
-      return false;
-    }
-  });
-});
+function parseArgs(argv) {
+  var parsedArgs = {
+    positional: [],
+    named: {}
+  };
 
-if(options.help) {
+  parsedArgs.positional = argv._;
+  delete argv._;
+
+  Object.keys(argumentAliases).forEach(function(opt) {
+    argumentAliases[opt].forEach(function(alias) {
+      if(argv[alias]) {
+        parsedArgs.named[opt] = argv[alias];
+        delete argv[alias];
+      }
+    });
+  });
+
+  parsedArgs.named = extend(argv, parsedArgs.named);
+
+  return parsedArgs;
+}
+
+var args = parseArgs(argv);
+
+var task = 'default';
+var target = args.positional.length ? args.positional[0] : null;
+
+if(target && target.indexOf(':') !== -1) {
+  target = target.split(':');
+  task = target[0];
+  target = target[1];
+}
+
+if(args.named.help) {
   var out = '\n' +
     '  Usage: fly [task:]target [options]\n\n' +
     '  Options:\n\n'  +
@@ -62,7 +76,7 @@ if(options.help) {
   process.exit(0);
 }
 
-if(options.version) {
+if(args.named.version) {
   console.log(cliPackage.version);
   process.exit(0);
 }
@@ -91,9 +105,9 @@ var invoke = function(env) {
   process.chdir(env.configBase);
   require(env.configPath);
   var instance = require(env.modulePath);
-  instance.run(task, target, options);
+  instance.run(task, target, args.named);
 };
 
 cli.launch({
-  configPath: options.file
+  configPath: args.named.file
 }, invoke);

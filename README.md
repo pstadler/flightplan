@@ -92,7 +92,7 @@ plan.remote(function(remote) { /* ... */ });
 
 <!-- DOCS -->
 [Flightplan](#user-content-Flightplan)
-* [target(name, hosts)](#user-content-flightplan.target(name%2C%20hosts))
+* [target(name, hosts[, options])](#user-content-flightplan.target(name%2C%20hosts%5B%2C%20options%5D))
 * [local([tasks, ]fn)](#user-content-flightplan.local(%5Btasks%2C%20%5Dfn))
 * [remote([tasks, ]fn)](#user-content-flightplan.remote(%5Btasks%2C%20%5Dfn))
 * [abort([message])](#user-content-flightplan.abort(%5Bmessage%5D))
@@ -193,7 +193,7 @@ plan.local('default', function(transport) {});
 plan.remote(['default', 'deploy', 'build'], function(transport) {});
 ```
 
-### <a name="flightplan.target(name%2C%20hosts)"></a>flightplan.target(name, hosts) → this 
+### <a name="flightplan.target(name%2C%20hosts%5B%2C%20options%5D)"></a>flightplan.target(name, hosts[, options]) → this 
 
 Configure the flightplan's targets with `target()`. Without a
 proper setup you can't do remote flights which require at
@@ -233,6 +233,37 @@ the `-u|--username` option:
 
 ```bash
 fly production --username=admin
+```
+
+#### Storing and using properties depending on the target
+
+`target()` takes an optional third argument to store properties for a
+specific target. These properties can be accessed during runtime:
+
+```javascript
+plan.target('staging', {...}, {
+  webRoot: '/usr/local/www',
+  sudoUser: 'www'
+});
+
+plan.target('production', {...}, {
+  webRoot: '/home/node',
+  sudoUser: 'node'
+});
+
+plan.remote(function(remote) {
+  var webRoot = plan.runtime.options.webRoot;   // fly staging -> '/usr/local/www'
+  var sudoUser = plan.runtime.options.sudoUser; // fly staging -> 'www'
+  remote.sudo('ls -al ' + webRoot, { user: sudoUser });
+});
+```
+
+These properties can be set or overwritten by passing them as named options
+to the `fly` command:
+
+```bash
+$ fly staging --sudoUser=foo
+// plan.runtime.options.sudoUser -> 'foo'
 ```
 
 ### <a name="flightplan.local(%5Btasks%2C%20%5Dfn)"></a>flightplan.local([tasks, ]fn) → this 
