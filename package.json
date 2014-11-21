@@ -45,7 +45,8 @@
     "ssh2": "^0.3.6",
     "temp-write": "^1.1.0",
     "util-extend": "^1.0.1",
-    "v8flags": "^1.0.1"
+    "v8flags": "^1.0.1",
+    "yargs": "^1.3.3"
   },
   "license": "MIT",
   "devDependencies": {

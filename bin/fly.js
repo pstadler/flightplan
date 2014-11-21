@@ -6,7 +6,38 @@ var Liftoff = require('liftoff')
   , extend = require('util-extend')
   , cliPackage = require('../package')
   , logger = require('../lib/logger')()
-  , argv = require('minimist')(process.argv.slice(2));
+  , yargs = require('yargs');
+
+var argv = yargs
+  .usage('Usage: $0 [task:]destination [options]')
+  .help('help').alias('help', 'h')
+  .version(cliPackage.version, 'version').alias('version', 'v')
+  .options('flightplan', {
+    alias: 'f',
+    //default: 'flightplan.js',
+    describe: 'path to flightplan'
+  })
+  .options('username', {
+    alias: 'u',
+    describe: 'user for connecting to remote hosts'
+  })
+  .options('debug', {
+    alias: 'd',
+    describe: 'enable debug mode'
+  })
+  .options('no-color', {
+    alias: 'C',
+    describe: 'disable colors in output'
+  }).argv;
+
+var task = 'default';
+var target = argv._ ? argv._[0] : null;
+
+if(target && target.indexOf(':') !== -1) {
+  target = target.split(':');
+  task = target[0];
+  target = target[1];
+}
 
 var cli = new Liftoff({
   name: 'flightplan',
@@ -18,68 +49,6 @@ var cli = new Liftoff({
   },
   nodeFlags: v8flags.fetch()
 });
-
-var argumentAliases = {
-  file:     ['f', 'flightplan'],
-  username: ['u', 'username'],
-  debug:    ['d', 'debug'],
-  version:  ['v', 'version'],
-  help:     ['h', 'help'],
-  color:    ['no-color']
-};
-
-function parseArgs(argv) {
-  var parsedArgs = {
-    positional: [],
-    named: {}
-  };
-
-  parsedArgs.positional = argv._;
-  delete argv._;
-
-  Object.keys(argumentAliases).forEach(function(opt) {
-    argumentAliases[opt].forEach(function(alias) {
-      if(argv[alias]) {
-        parsedArgs.named[opt] = argv[alias];
-        delete argv[alias];
-      }
-    });
-  });
-
-  parsedArgs.named = extend(argv, parsedArgs.named);
-
-  return parsedArgs;
-}
-
-var args = parseArgs(argv);
-
-var task = 'default';
-var target = args.positional.length ? args.positional[0] : null;
-
-if(target && target.indexOf(':') !== -1) {
-  target = target.split(':');
-  task = target[0];
-  target = target[1];
-}
-
-if(args.named.help) {
-  var out = '\n' +
-    '  Usage: fly [task:]target [options]\n\n' +
-    '  Options:\n\n'  +
-    '    -h, --help               show usage information\n' +
-    '    -v, --version            show version number\n' +
-    '    -f, --flightplan <file>  path to flightplan (default: flightplan.js)\n' +
-    '    -u, --username <string>  user for connecting to remote hosts\n' +
-    '    -d, --debug              enable debug mode\n' +
-    '        --no-color           disable colors in output\n';
-  console.log(out);
-  process.exit(0);
-}
-
-if(args.named.version) {
-  console.log(cliPackage.version);
-  process.exit(0);
-}
 
 var invoke = function(env) {
   if(!target) {
@@ -105,9 +74,9 @@ var invoke = function(env) {
   process.chdir(env.configBase);
   require(env.configPath);
   var instance = require(env.modulePath);
-  instance.run(task, target, args.named);
+  instance.run(task, target, argv);
 };
 
 cli.launch({
-  configPath: args.named.file
+  configPath: argv.flightplan
 }, invoke);
