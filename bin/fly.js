@@ -28,7 +28,7 @@ var options = nopt(knownOptions, shortHands, process.argv, 2);
 
 if(options.help) {
   console.log('\n' +
-    '  Usage: fly [task:]destination [options]\n\n' +
+    '  Usage: fly [task:]target [options]\n\n' +
     '  Options:\n\n' +
     '    -h, --help               output usage information\n' +
     '    -V, --version            output the version number\n' +
