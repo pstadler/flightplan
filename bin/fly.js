@@ -30,12 +30,12 @@ if(options.help) {
   console.log('\n' +
     '  Usage: fly [task:]target [options]\n\n' +
     '  Options:\n\n' +
-    '    -h, --help               output usage information\n' +
-    '    -V, --version            output the version number\n' +
     '    -f, --flightplan <file>  path to flightplan\n' +
     '    -u, --username <name>    user for connecting to remote hosts\n' +
     '    -d, --debug              enable debug mode\n' +
-    '    -C, --no-color           disable color output\n'
+    '    -C, --no-color           disable color output\n' +
+    '    -v, --version            output the version number\n' +
+    '    -h, --help               output usage information\n'
   );
   process.exit(1);
 }
