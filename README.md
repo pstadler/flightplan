@@ -235,10 +235,10 @@ the `-u|--username` option:
 fly production --username=admin
 ```
 
-#### Storing and using properties depending on the target
+#### Defining and using properties depending on the target
 
-`target()` takes an optional third argument to store properties for a
-specific target. These properties can be accessed during runtime:
+`target()` takes an optional third argument to define properties used by
+this target. Values defined in this way can be accessed during runtime.
 
 ```javascript
 plan.target('staging', {...}, {
@@ -254,16 +254,16 @@ plan.target('production', {...}, {
 plan.remote(function(remote) {
   var webRoot = plan.runtime.options.webRoot;   // fly staging -> '/usr/local/www'
   var sudoUser = plan.runtime.options.sudoUser; // fly staging -> 'www'
-  remote.sudo('ls -al ' + webRoot, { user: sudoUser });
+  remote.sudo('ls -al ' + webRoot, {user: sudoUser});
 });
 ```
 
-These properties can be set or overwritten by passing them as named options
-to the `fly` command:
+Properties can be set and overwritten by passing them as named options to the
+ `fly` command.
 
 ```bash
 $ fly staging --sudoUser=foo
-// plan.runtime.options.sudoUser -> 'foo'
+# plan.runtime.options.sudoUser -> 'foo'
 ```
 
 ### <a name="flightplan.local(%5Btasks%2C%20%5Dfn)"></a>flightplan.local([tasks, ]fn) → this 
