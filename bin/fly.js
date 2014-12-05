@@ -65,6 +65,10 @@ var cli = new Liftoff({
   nodeFlags: v8flags.fetch()
 });
 
+cli.on('requireFail', function (name, err) {
+  console.error('Unable to load:', name, err);
+});
+
 var invoke = function(env) {
   if(!target) {
     console.error('Error: No target specified');
