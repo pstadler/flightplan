@@ -19,14 +19,7 @@ $ npm install flightplan --save-dev
 $ fly [task:]<target> [--flightplan flightplan.(js|coffee)]
 ```
 
-By default, the `fly` command will look for `flightplan.js` or `flightplan.coffee`.
-
-If you do not install the Flightplan module locally to your project (i.e. to support non-javascript projects) then make sure the global `node_modules` is in your Node.js path. For example:
-
-```bash
-$ export NODE_PATH=/usr/local/lib/node_modules
-$ fly <destination>
-```
+By default, the `fly` command will try to load `flightplan.js` or `flightplan.coffee`.
 
 ## Sample flightplan.js
 
