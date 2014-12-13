@@ -377,6 +377,19 @@ var result = transport.echo('Hello world');
 console.log(result); // { code: 0, stdout: 'Hello world\n', stderr: null }
 ```
 
+#### Advanced options
+Flightplan uses `child_process#exec()` for executing local commands and
+`mscdex/ssh2#exec()` for remote commands. Options passed with `exec` will
+be forwarded to either of these functions.
+
+```javascript
+// increase maxBuffer for child_process#exec()
+local.ls('-al', {exec: {maxBuffer: 2000*1024}});
+
+// enable pty for mscdex/ssh2#exec()
+remote.ls('-al', {exec: {pty: true}});
+```
+
 ### <a name="transport.sudo(command%5B%2C%20options%5D)"></a>transport.sudo(command[, options]) → code: int, stdout: String, stderr: String
 
 Execute a command as another user with `sudo()`. It has the same
