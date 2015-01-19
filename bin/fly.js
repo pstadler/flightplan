@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var Liftoff = require('liftoff')
+  , interpret = require('interpret')
   , v8flags = require('v8flags')
   , semver = require('semver')
   , cliPackage = require('../package')
@@ -58,15 +59,13 @@ var cli = new Liftoff({
   name: 'flightplan',
   processTitle: 'Flightplan',
   configName: 'flightplan',
-  extensions: {
-    '.js': null,
-    '.coffee': 'coffee-script/register'
-  },
-  nodeFlags: v8flags.fetch()
+  extensions: interpret.jsVariants,
+  v8flags: v8flags
 });
 
-cli.on('requireFail', function (name, err) {
-  console.error('Unable to load:', name, err);
+cli.on('requireFail', function(name) {
+  console.error('Error: Unable to load module "' + name + '"');
+  process.exit(1);
 });
 
 var invoke = function(env) {

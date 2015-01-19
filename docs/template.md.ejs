@@ -24,7 +24,7 @@
           <?= doc.javadoc[0].name.toLowerCase() ?>.<?= comment.name -?>
           <? if (comment.returnTags.length > 0) { -?> →
             <? comment.returnTags.forEach(function(returnTag) { -?>
-              <?= ' ' + returnTag.joinedTypes ?><?= ' ' + returnTag.description ?>
+              <?= /*' ' + returnTag.joinedTypes + */' ' + returnTag.description ?>
             <? }) ?>
           <? } ?>
         <? } else { ?>

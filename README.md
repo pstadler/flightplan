@@ -186,7 +186,7 @@ plan.local('default', function(transport) {});
 plan.remote(['default', 'deploy', 'build'], function(transport) {});
 ```
 
-### <a name="flightplan.target(name%2C%20hosts%5B%2C%20options%5D)"></a>flightplan.target(name, hosts[, options]) → this 
+### <a name="flightplan.target(name%2C%20hosts%5B%2C%20options%5D)"></a>flightplan.target(name, hosts[, options]) → this
 
 Configure the flightplan's targets with `target()`. Without a
 proper setup you can't do remote flights which require at
@@ -259,7 +259,7 @@ $ fly staging --sudoUser=foo
 # plan.runtime.options.sudoUser -> 'foo'
 ```
 
-### <a name="flightplan.local(%5Btasks%2C%20%5Dfn)"></a>flightplan.local([tasks, ]fn) → this 
+### <a name="flightplan.local(%5Btasks%2C%20%5Dfn)"></a>flightplan.local([tasks, ]fn) → this
 
 Calling this method registers a local flight. Local flights are
 executed on your localhost. When `fn` gets called a `Transport` object
@@ -274,7 +274,7 @@ plan.local(function(local) {
 An optional first parameter of type Array or String can be passed for
 defining the flight's task(s).
 
-### <a name="flightplan.remote(%5Btasks%2C%20%5Dfn)"></a>flightplan.remote([tasks, ]fn) → this 
+### <a name="flightplan.remote(%5Btasks%2C%20%5Dfn)"></a>flightplan.remote([tasks, ]fn) → this
 
 Register a remote flight. Remote flights are executed on the current
 target's remote hosts defined with `briefing()`. When `fn` gets called
@@ -430,7 +430,7 @@ www:x:1002:1002::/home/www:/bin/bash   # GOOD
 www:x:1002:1002::/home/www:/bin/false  # BAD
 ```
 
-### <a name="transport.transfer(files%2C%20remoteDir%5B%2C%20options%5D)"></a>transport.transfer(files, remoteDir[, options]) → [results] 
+### <a name="transport.transfer(files%2C%20remoteDir%5B%2C%20options%5D)"></a>transport.transfer(files, remoteDir[, options]) → [results]
 
 Copy a list of files to the current target's remote host(s) using
 `rsync` with the SSH protocol. File transfers are executed in parallel.
@@ -471,7 +471,7 @@ In this case the latter will be used. If debugging is enabled
 (either with `briefing()` or with `fly --debug`), `rsync` is executed
 in verbose mode (`-vv`).
 
-### <a name="transport.prompt(message%5B%2C%20options%5D)"></a>transport.prompt(message[, options]) → input 
+### <a name="transport.prompt(message%5B%2C%20options%5D)"></a>transport.prompt(message[, options]) → input
 
 Prompt for user input.
 
@@ -493,7 +493,7 @@ if(plan.runtime.target === 'production') {
 }
 ```
 
-### <a name="transport.waitFor(fn(done))"></a>transport.waitFor(fn(done)) → mixed 
+### <a name="transport.waitFor(fn(done))"></a>transport.waitFor(fn(done)) → mixed
 
 Execute a function and return after the callback `done` is called.
 This is used for running asynchronous functions in a synchronous way.
