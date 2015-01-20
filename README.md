@@ -1,4 +1,4 @@
-# Flightplan ✈ [![NPM version][npm-version-image]][npm-url] [![NPM downloads][npm-downloads-image]][npm-url] [![MIT License][license-image]][license-url]
+# Flightplan ✈ [![NPM version][npm-version-image]][npm-url] [![NPM downloads][npm-downloads-image]][npm-url] [![Dependency Status][dependencies-image]][dependencies-url] [![MIT License][license-image]][license-url]
 
 Run sequences of commands against local and remote hosts.
 
@@ -605,9 +605,12 @@ transport.debug('Copying files to remote hosts');
 
 <!-- ENDDOCS -->
 
-[npm-url]: https://npmjs.org/package/flightplan
-[npm-version-image]: http://img.shields.io/npm/v/flightplan.svg?style=flat-square
-[npm-downloads-image]: http://img.shields.io/npm/dm/flightplan.svg?style=flat-square
+[npm-url]: https://npmjs.com/package/flightplan
+[npm-version-image]: https://img.shields.io/npm/v/flightplan.svg?style=flat-square
+[npm-downloads-image]: https://img.shields.io/npm/dm/flightplan.svg?style=flat-square
 
-[license-url]: LICENSE
-[license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
+[dependencies-url]: https://david-dm.org/pstadler/flightplan
+[dependencies-image]: https://david-dm.org/pstadler/flightplan.svg?style=flat-square
+
+[license-url]: https://github.com/pstadler/flightplan/blob/master/LICENSE
+[license-image]: https://img.shields.io/npm/l/flightplan.svg?style=flat-square
