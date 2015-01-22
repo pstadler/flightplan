@@ -131,8 +131,7 @@ plan.local(function(transport) {
 
 #### Remote flights
 
-Commands in remote flights are executed in **parallel** against
-remote hosts defined during the briefing.
+Commands in remote flights are executed in **parallel** against remote hosts.
 
 ```javascript
 plan.remote(function(transport) {
@@ -219,6 +218,18 @@ plan.target('production', [
     agent: process.env.SSH_AUTH_SOCK
   }
 ]);
+
+// run with `fly dynamic-hosts`
+plan.target('dynamic-hosts', function(done) {
+  var ec2 = require('aws-lib').createEC2Client(accessKeyId, secretAccessKey);
+  ec2.call('DescribeInstances', {}, function(err, result) {
+    if(err) {
+      return done(err);
+    }
+    var hosts = []; // do your magic here
+    done(hosts);
+  });
+});
 ```
 
 You can override the `username` value of hosts by calling `fly` with
@@ -226,6 +237,42 @@ the `-u|--username` option:
 
 ```bash
 fly production --username=admin
+```
+
+#### Configuring remote hosts during runtime (e.g. using aws/ec2)
+
+Instead of having a static hosts configuration for a target you can configure
+them on the fly by passing a function `fn(done)` as the second argument to
+`target()`.
+
+This function is exectued at the beginning and flightplan will wait until
+`done` is called. Whatever you pass to `done` is returned and used for
+connecting to remote hosts, this can either be an object or an array of
+objects depending on if you want to connect to one or multiple hosts. Passing
+an `Error` object will immediately abort the current flightplan.
+
+```javascript
+plan.target('production', function(done) {
+  var ec2 = require('aws-lib').createEC2Client(accessKeyId, secretAccessKey);
+  ec2.call('DescribeInstances', {}, function(err, result) {
+    if(err) {
+      return done(err); // passing an Error object triggers flightplan.abort()
+    }
+    var ec2hosts = []; // do your magic and then call `done`, e.g.:
+    done([
+      {
+        host: ec2hosts[0].ip,
+        username: 'ec2-user',
+        agent: process.env.SSH_AUTH_SOCK
+      },
+      {
+        host: ec2hosts[1].ip,
+        username: 'ec2-user',
+        agent: process.env.SSH_AUTH_SOCK
+      }
+    ]);
+  });
+});
 ```
 
 #### Defining and using properties depending on the target
@@ -277,7 +324,7 @@ defining the flight's task(s).
 ### <a name="flightplan.remote(%5Btasks%2C%20%5Dfn)"></a>flightplan.remote([tasks, ]fn) → this
 
 Register a remote flight. Remote flights are executed on the current
-target's remote hosts defined with `briefing()`. When `fn` gets called
+target's remote hosts defined with `target()`. When `fn` gets called
 a `Transport` object is passed with the first argument.
 
 ```javascript
