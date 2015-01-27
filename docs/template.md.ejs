@@ -1,18 +1,4 @@
 <? docfiles.forEach(function(doc) { ?>
-  <? doc.javadoc.forEach(function(comment) { -?>
-    <? if (!comment.ignore) { -?>
-      <? if (comment.name) { -?>
-        <? if (comment.isMethod || comment.isFunction) { -?>
-          * [<?= comment.name ?>](#user-content-<?= encodeURIComponent(doc.javadoc[0].name.toLowerCase() + '.' + comment.name) ?>)
-        <? } else { -?>
-          [<?= comment.name ?>](#user-content-<?= encodeURIComponent(comment.name) ?>)
-        <? } -?>
-      <? } -?>
-    <? } -?>
-  <? }) -?>
-<? }) ?>
-
-<? docfiles.forEach(function(doc) { ?>
 
   <!-- Start <?= doc.filename ?> -->
 
@@ -28,7 +14,7 @@
             <? }) ?>
           <? } ?>
         <? } else { ?>
-          ## <a name="<?= encodeURIComponent(comment.name) ?>"></a><?= comment.name ?>
+          ## <?= comment.name ?>
         <? } ?>
       <? } ?>
 

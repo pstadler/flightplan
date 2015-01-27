@@ -1,10 +1,10 @@
 # Flightplan ✈ [![NPM version][npm-version-image]][npm-url] [![NPM downloads][npm-downloads-image]][npm-url] [![Dependency Status][dependencies-image]][dependencies-url] [![MIT License][license-image]][license-url]
 
-Run sequences of commands against local and remote hosts.
+Run sequences of shell commands against local and remote hosts.
 
 Flightplan is a [node.js](http://nodejs.org) library for streamlining application deployment or systems administration tasks, similar to Python's [Fabric](http://fabfile.org).
 
-**Flightplan 0.5.0 has been rewritten from scratch and is not compatible with 0.4.x releases. Read more about what's changed in the [release notes](https://github.com/pstadler/flightplan/releases/tag/0.5.0).**
+A complete list of changes can be found in the [Changelog](https://github.com/pstadler/flightplan/releases). Support is available on [Gitter](https://gitter.im/pstadler/flightplan).
 
 ## Installation & Usage
 
@@ -84,29 +84,10 @@ plan.remote(function(remote) { /* ... */ });
 # Documentation
 
 <!-- DOCS -->
-[Flightplan](#user-content-Flightplan)
-* [target(name, hosts[, options])](#user-content-flightplan.target(name%2C%20hosts%5B%2C%20options%5D))
-* [local([tasks, ]fn)](#user-content-flightplan.local(%5Btasks%2C%20%5Dfn))
-* [remote([tasks, ]fn)](#user-content-flightplan.remote(%5Btasks%2C%20%5Dfn))
-* [abort([message])](#user-content-flightplan.abort(%5Bmessage%5D))
-
-[Transport](#user-content-Transport)
-* [exec(command[, options])](#user-content-transport.exec(command%5B%2C%20options%5D))
-* [sudo(command[, options])](#user-content-transport.sudo(command%5B%2C%20options%5D))
-* [transfer(files, remoteDir[, options])](#user-content-transport.transfer(files%2C%20remoteDir%5B%2C%20options%5D))
-* [prompt(message[, options])](#user-content-transport.prompt(message%5B%2C%20options%5D))
-* [waitFor(fn(done))](#user-content-transport.waitFor(fn(done)))
-* [with(command|options[, options], fn)](#user-content-transport.with(command%7Coptions%5B%2C%20options%5D%2C%20fn))
-* [silent()](#user-content-transport.silent())
-* [verbose()](#user-content-transport.verbose())
-* [failsafe()](#user-content-transport.failsafe())
-* [unsafe()](#user-content-transport.unsafe())
-* [log(message)](#user-content-transport.log(message))
-* [debug(message)](#user-content-transport.debug(message))
 
 <!-- Start lib/index.js -->
 
-## <a name="Flightplan"></a>Flightplan
+## Flightplan
 
 A flightplan is a set of subsequent flights to be executed on one or more
 hosts. Configuration is handled with the `target()` method.
@@ -189,7 +170,7 @@ plan.remote(['default', 'deploy', 'build'], function(transport) {});
 
 Configure the flightplan's targets with `target()`. Without a
 proper setup you can't do remote flights which require at
-least one remote host. Each target consists of one ore more hosts.
+least one remote host. Each target consists of one or more hosts.
 
 Values in the hosts section are passed directly to the `connect()`
 method of [mscdex/ssh2](https://github.com/mscdex/ssh2#connection-methods)
@@ -221,12 +202,23 @@ plan.target('production', [
 
 // run with `fly dynamic-hosts`
 plan.target('dynamic-hosts', function(done) {
-  var ec2 = require('aws-lib').createEC2Client(accessKeyId, secretAccessKey);
-  ec2.call('DescribeInstances', {}, function(err, result) {
+  var AWS = require('aws-sdk');
+  AWS.config.update({accessKeyId: '...', secretAccessKey: '...'});
+  var ec2 = new AWS.EC2();
+  var params = {Filters: [{Name: 'instance-state-name', Values: ['running']}]};
+  ec2.describeInstances(params, function(err, response) {
     if(err) {
       return done(err);
     }
-    var hosts = []; // do your magic here
+    var hosts = response.data.Reservations.map(function(reservation) {
+      return reservation.Instances.map(function(instance) {
+        return {
+          host: server.PublicIpAddress,
+          username: 'pstadler',
+          agent: process.env.SSH_AUTH_SOCK
+        };
+      });
+    });
     done(hosts);
   });
 });
@@ -239,38 +231,38 @@ the `-u|--username` option:
 fly production --username=admin
 ```
 
-#### Configuring remote hosts during runtime (e.g. using aws/ec2)
+#### Configuring remote hosts during runtime (e.g. using AWS/EC2)
 
 Instead of having a static hosts configuration for a target you can configure
-them on the fly by passing a function `fn(done)` as the second argument to
+it on the fly by passing a function `fn(done)` as the second argument to
 `target()`.
 
-This function is exectued at the beginning and flightplan will wait until
-`done` is called. Whatever you pass to `done` is returned and used for
-connecting to remote hosts, this can either be an object or an array of
-objects depending on if you want to connect to one or multiple hosts. Passing
-an `Error` object will immediately abort the current flightplan.
+This function is exectued at the very beginning. Whatever is passed to
+`done()` will be used for connecting to remote hosts. This can either be an
+object or an array of objects depending on if you want to connect to one or
+multiple hosts. Passing an `Error` object will immediately abort the current
+flightplan.
 
 ```javascript
-plan.target('production', function(done) {
-  var ec2 = require('aws-lib').createEC2Client(accessKeyId, secretAccessKey);
-  ec2.call('DescribeInstances', {}, function(err, result) {
+plan.target('dynamic-hosts', function(done) {
+  var AWS = require('aws-sdk');
+  AWS.config.update({accessKeyId: '...', secretAccessKey: '...'});
+  var ec2 = new AWS.EC2();
+  var params = {Filters: [{Name: 'instance-state-name', Values: ['running']}]};
+  ec2.describeInstances(params, function(err, response) {
     if(err) {
-      return done(err); // passing an Error object triggers flightplan.abort()
+      return done(err);
     }
-    var ec2hosts = []; // do your magic and then call `done`, e.g.:
-    done([
-      {
-        host: ec2hosts[0].ip,
-        username: 'ec2-user',
-        agent: process.env.SSH_AUTH_SOCK
-      },
-      {
-        host: ec2hosts[1].ip,
-        username: 'ec2-user',
-        agent: process.env.SSH_AUTH_SOCK
-      }
-    ]);
+    var hosts = response.data.Reservations.map(function(reservation) {
+      return reservation.Instances.map(function(instance) {
+        return {
+          host: server.PublicIpAddress,
+          username: 'pstadler',
+          agent: process.env.SSH_AUTH_SOCK
+        };
+      });
+    });
+    done(hosts);
   });
 });
 ```
@@ -350,7 +342,7 @@ plan.abort('Severe turbulences over the atlantic ocean!');
 
 <!-- Start lib/transport/index.js -->
 
-## <a name="Transport"></a>Transport
+## Transport
 
 A transport is the interface you use during flights. Basically they
 offer you a set of methods to execute a chain of commands. Depending on the
@@ -513,9 +505,9 @@ local.transfer(files, '/tmp/foo');
 ```
 
 `transfer()` will use the current host's username defined with
-`briefing()` unless `fly` is called with the `-u|--username` option.
+`target()` unless `fly` is called with the `-u|--username` option.
 In this case the latter will be used. If debugging is enabled
-(either with `briefing()` or with `fly --debug`), `rsync` is executed
+(either with `target()` or with `fly --debug`), `rsync` is executed
 in verbose mode (`-vv`).
 
 ### <a name="transport.prompt(message%5B%2C%20options%5D)"></a>transport.prompt(message[, options]) → input
