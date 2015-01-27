@@ -210,13 +210,14 @@ plan.target('dynamic-hosts', function(done) {
     if(err) {
       return done(err);
     }
-    var hosts = response.data.Reservations.map(function(reservation) {
-      return reservation.Instances.map(function(instance) {
-        return {
-          host: server.PublicIpAddress,
+    var hosts = [];
+    response.data.Reservations.forEach(function(reservation) {
+      reservation.Instances.forEach(function(instance) {
+        hosts.push({
+          host: instance.PublicIpAddress,
           username: 'pstadler',
           agent: process.env.SSH_AUTH_SOCK
-        };
+        });
       });
     });
     done(hosts);
@@ -253,13 +254,14 @@ plan.target('dynamic-hosts', function(done) {
     if(err) {
       return done(err);
     }
-    var hosts = response.data.Reservations.map(function(reservation) {
-      return reservation.Instances.map(function(instance) {
-        return {
-          host: server.PublicIpAddress,
+    var hosts = [];
+    response.data.Reservations.forEach(function(reservation) {
+      reservation.Instances.forEach(function(instance) {
+        hosts.push({
+          host: instance.PublicIpAddress,
           username: 'pstadler',
           agent: process.env.SSH_AUTH_SOCK
-        };
+        });
       });
     });
     done(hosts);

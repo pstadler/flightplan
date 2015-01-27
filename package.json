@@ -1,7 +1,7 @@
 {
   "name": "flightplan",
   "description": "Library for streamlining application deployment or systems administration tasks",
-  "version": "0.5.6",
+  "version": "0.6.0",
   "author": "Patrick Stadler <patrick.stadler@gmail.com>",
   "keywords": [
     "deploy",
@@ -10,12 +10,14 @@
     "devops",
     "exec",
     "shell",
+    "bash",
     "ssh",
     "tasks",
     "parallel",
     "sequential",
     "remote",
     "local",
+    "cloud",
     "fabric"
   ],
   "readmeFilename": "README.md",
