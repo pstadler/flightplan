@@ -166,7 +166,7 @@ plan.local('default', function(transport) {});
 plan.remote(['default', 'deploy', 'build'], function(transport) {});
 ```
 
-### <a name="flightplan.target(name%2C%20hosts%5B%2C%20options%5D)"></a>flightplan.target(name, hosts[, options]) → this
+### flightplan.target(name, hosts[, options]) → this
 
 Configure the flightplan's targets with `target()`. Without a
 proper setup you can't do remote flights which require at
@@ -300,7 +300,7 @@ $ fly staging --sudoUser=foo
 # plan.runtime.options.sudoUser -> 'foo'
 ```
 
-### <a name="flightplan.local(%5Btasks%2C%20%5Dfn)"></a>flightplan.local([tasks, ]fn) → this
+### flightplan.local([tasks, ]fn) → this
 
 Calling this method registers a local flight. Local flights are
 executed on your localhost. When `fn` gets called a `Transport` object
@@ -315,7 +315,7 @@ plan.local(function(local) {
 An optional first parameter of type Array or String can be passed for
 defining the flight's task(s).
 
-### <a name="flightplan.remote(%5Btasks%2C%20%5Dfn)"></a>flightplan.remote([tasks, ]fn) → this
+### flightplan.remote([tasks, ]fn) → this
 
 Register a remote flight. Remote flights are executed on the current
 target's remote hosts defined with `target()`. When `fn` gets called
@@ -330,7 +330,7 @@ plan.remote(function(remote) {
 An optional first parameter of type Array or String can be passed for
 defining the flight's task(s).
 
-### <a name="flightplan.abort(%5Bmessage%5D)"></a>flightplan.abort([message])
+### flightplan.abort([message])
 
 Manually abort the current flightplan and prevent any further commands and
 flights from being executed. An optional message can be passed which
@@ -383,7 +383,7 @@ plan.remote(function(transport) { // applies to local flights as well
 });
 ```
 
-### <a name="transport.exec(command%5B%2C%20options%5D)"></a>transport.exec(command[, options]) → code: int, stdout: String, stderr: String
+### transport.exec(command[, options]) → code: int, stdout: String, stderr: String
 
 To execute a command you have the choice between using `exec()` or one
 of the handy wrappers for often used commands:
@@ -431,7 +431,7 @@ local.ls('-al', {exec: {maxBuffer: 2000*1024}});
 remote.ls('-al', {exec: {pty: true}});
 ```
 
-### <a name="transport.sudo(command%5B%2C%20options%5D)"></a>transport.sudo(command[, options]) → code: int, stdout: String, stderr: String
+### transport.sudo(command[, options]) → code: int, stdout: String, stderr: String
 
 Execute a command as another user with `sudo()`. It has the same
 signature as `exec()`. Per default, the user under which the command
@@ -471,7 +471,7 @@ www:x:1002:1002::/home/www:/bin/bash   # GOOD
 www:x:1002:1002::/home/www:/bin/false  # BAD
 ```
 
-### <a name="transport.transfer(files%2C%20remoteDir%5B%2C%20options%5D)"></a>transport.transfer(files, remoteDir[, options]) → [results]
+### transport.transfer(files, remoteDir[, options]) → [results]
 
 Copy a list of files to the current target's remote host(s) using
 `rsync` with the SSH protocol. File transfers are executed in parallel.
@@ -512,7 +512,7 @@ In this case the latter will be used. If debugging is enabled
 (either with `target()` or with `fly --debug`), `rsync` is executed
 in verbose mode (`-vv`).
 
-### <a name="transport.prompt(message%5B%2C%20options%5D)"></a>transport.prompt(message[, options]) → input
+### transport.prompt(message[, options]) → input
 
 Prompt for user input.
 
@@ -534,7 +534,7 @@ if(plan.runtime.target === 'production') {
 }
 ```
 
-### <a name="transport.waitFor(fn(done))"></a>transport.waitFor(fn(done)) → mixed
+### transport.waitFor(fn(done)) → mixed
 
 Execute a function and return after the callback `done` is called.
 This is used for running asynchronous functions in a synchronous way.
@@ -553,7 +553,7 @@ var result = transport.waitFor(function(done) {
 console.log(result); // 'sent!'
 ```
 
-### <a name="transport.with(command%7Coptions%5B%2C%20options%5D%2C%20fn)"></a>transport.with(command|options[, options], fn)
+### transport.with(command|options[, options], fn)
 
 Execute commands with a certain context.
 
@@ -571,7 +571,7 @@ transport.with('cd /tmp', {silent: true}, function() {
 });
 ```
 
-### <a name="transport.silent()"></a>transport.silent()
+### transport.silent()
 
 When calling `silent()` all subsequent commands are executed without
 printing their output to stdout until `verbose()` is called.
@@ -582,7 +582,7 @@ transport.silent();
 transport.ls(); // output won't be printed to stdout
 ```
 
-### <a name="transport.verbose()"></a>transport.verbose()
+### transport.verbose()
 
 Calling `verbose()` reverts the behavior introduced with `silent()`.
 Output of commands will be printed to stdout.
@@ -594,7 +594,7 @@ transport.verbose();
 transport.ls(); // output will be printed to stdout
 ```
 
-### <a name="transport.failsafe()"></a>transport.failsafe()
+### transport.failsafe()
 
 When calling `failsafe()`, all subsequent commands are allowed to fail
 until `unsafe()` is called. In other words, the flight will continue
@@ -608,7 +608,7 @@ transport.ls('foo'); // ls: foo: No such file or directory
 transport.log('Previous command failed, but flight was not aborted');
 ```
 
-### <a name="transport.unsafe()"></a>transport.unsafe()
+### transport.unsafe()
 
 Calling `unsafe()` reverts the behavior introduced with `failsafe()`.
 The flight will be aborted if a subsequent command fails (i.e. returns
@@ -623,7 +623,7 @@ transport.ls('foo'); // ls: foo: No such file or directory
 // flight aborted
 ```
 
-### <a name="transport.log(message)"></a>transport.log(message)
+### transport.log(message)
 
 Print a message to stdout. Flightplan takes care that the message
 is formatted correctly within the current context.
@@ -632,7 +632,7 @@ is formatted correctly within the current context.
 transport.log('Copying files to remote hosts');
 ```
 
-### <a name="transport.debug(message)"></a>transport.debug(message)
+### transport.debug(message)
 
 Print a debug message to stdout if debug mode is enabled. Flightplan
 takes care that the message is formatted correctly within the current

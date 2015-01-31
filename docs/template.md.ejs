@@ -6,8 +6,7 @@
     <? if (!comment.ignore) { ?>
       <? if (comment.name) { ?>
         <? if (comment.isMethod || comment.isFunction) { ?>
-          ### <a name="<?= encodeURIComponent(doc.javadoc[0].name.toLowerCase() + '.' + comment.name) -?>"></a>
-          <?= doc.javadoc[0].name.toLowerCase() ?>.<?= comment.name -?>
+          ### <?= doc.javadoc[0].name.toLowerCase() ?>.<?= comment.name -?>
           <? if (comment.returnTags.length > 0) { -?> →
             <? comment.returnTags.forEach(function(returnTag) { -?>
               <?= /*' ' + returnTag.joinedTypes + */' ' + returnTag.description ?>
