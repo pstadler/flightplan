@@ -1,7 +1,7 @@
 {
   "name": "flightplan",
   "description": "Library for streamlining application deployment or systems administration tasks",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "author": "Patrick Stadler <patrick.stadler@gmail.com>",
   "keywords": [
     "deploy",
@@ -37,9 +37,9 @@
   },
   "dependencies": {
     "byline": "^4.1.1",
-    "chalk": "^0.5.1",
+    "chalk": "^1.0.0",
     "fibers": "^1.0.5",
-    "interpret": "^0.4.2",
+    "interpret": "^0.5.2",
     "liftoff": "^2.0.0",
     "nopt": "^3.0.1",
     "pretty-hrtime": "^1.0.0",
