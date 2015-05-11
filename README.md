@@ -534,7 +534,7 @@ if(plan.runtime.target === 'production') {
 }
 ```
 
-### transport.waitFor(fn(done)) → mixed
+### transport.waitFor(fn(done)) → {} mixed
 
 Execute a function and return after the callback `done` is called.
 This is used for running asynchronous functions in a synchronous way.
