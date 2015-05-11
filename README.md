@@ -533,8 +533,9 @@ if(plan.runtime.target === 'production') {
   }
 }
 
-// prompt in color. By default is write in green to be readable on white and dark background
-var ImportantMessage = transport.prompt('Enter your secret destination:', { color: red });
+// prompt in color. 
+// By default is write in green to be readable on white and dark background
+var ImportantMessage = transport.prompt('Enter your destination:', { color: red });
 ```
 
 ### transport.waitFor(fn(done)) → {} mixed
