@@ -532,9 +532,13 @@ if(plan.runtime.target === 'production') {
     plan.abort('User canceled flight');
   }
 }
+
+// prompt in color. 
+// By default is write in green to be readable on white and dark background
+var ImportantMessage = transport.prompt('Enter your destination:', { color: red });
 ```
 
-### transport.waitFor(fn(done)) → mixed
+### transport.waitFor(fn(done)) → {} mixed
 
 Execute a function and return after the callback `done` is called.
 This is used for running asynchronous functions in a synchronous way.

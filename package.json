@@ -36,24 +36,24 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "byline": "^4.1.1",
+    "byline": "^4.2.1",
     "chalk": "^1.0.0",
     "fibers": "^1.0.5",
     "interpret": "^0.5.2",
-    "liftoff": "^2.0.0",
+    "liftoff": "^2.0.3",
     "nopt": "^3.0.1",
     "pretty-hrtime": "^1.0.0",
     "prompt": "^0.2.14",
-    "semver": "^4.2.0",
+    "semver": "^4.3.4",
     "ssh2": "^0.3.6",
     "util-extend": "^1.0.1",
-    "v8flags": "^2.0.2"
+    "v8flags": "^2.0.5"
   },
   "license": "MIT",
   "devDependencies": {
-    "gulp": "^3.8.10",
-    "gulp-jshint": "^1.9.0",
-    "jshint-stylish": "^1.0.0",
+    "gulp": "^3.8.11",
+    "gulp-jshint": "^1.10.0",
+    "jshint-stylish": "^1.0.2",
     "markdox": "^0.1.8"
   }
 }
