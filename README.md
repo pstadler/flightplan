@@ -225,6 +225,26 @@ plan.target('dynamic-hosts', function(done) {
 });
 ```
 
+Usually flightplan will abort when a host is not reachable or authentication
+fails. This can be prevented by setting a property `failsafe` to `true` on
+any of the host configurations:
+
+```bash
+plan.target('production', [
+  {
+    host: 'www1.example.com',
+    username: 'pstadler',
+    agent: process.env.SSH_AUTH_SOCK
+  },
+  {
+    host: 'www2.example.com',
+    username: 'pstadler',
+    agent: process.env.SSH_AUTH_SOCK,
+    failsafe: true // continue flightplan even if connection to www2 fails
+  }
+]);
+```
+
 You can override the `username` value of hosts by calling `fly` with
 the `-u|--username` option:
 
@@ -534,7 +554,7 @@ if(plan.runtime.target === 'production') {
 }
 ```
 
-### transport.waitFor(fn(done)) → mixed
+### transport.waitFor(fn(done)) → {} mixed
 
 Execute a function and return after the callback `done` is called.
 This is used for running asynchronous functions in a synchronous way.
