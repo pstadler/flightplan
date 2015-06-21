@@ -229,7 +229,7 @@ Usually flightplan will abort when a host is not reachable or authentication
 fails. This can be prevented by setting a property `failsafe` to `true` on
 any of the host configurations:
 
-```bash
+```javascript
 plan.target('production', [
   {
     host: 'www1.example.com',
