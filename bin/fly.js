@@ -64,7 +64,7 @@ var cli = new Liftoff({
 });
 
 cli.on('requireFail', function(name) {
-  console.error('Error: Unable to load module "' + name + '"');
+  console.error("Error: Unable to load module '" + name + "'");
   process.exit(1);
 });
 
