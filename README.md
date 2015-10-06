@@ -459,10 +459,10 @@ will be executed is "root". This can be changed by passing
 `user: "name"` with the second argument:
 
 ```javascript
-// will run: sudo -u root -i 'Hello world'
+// will run: sudo -u root -i bash -c 'Hello world'
 transport.sudo('echo Hello world');
 
-// will run sudo -u www -i 'Hello world'
+// will run sudo -u www -i bash -c 'Hello world'
 transport.sudo('echo Hello world', {user: 'www'});
 
 // further options passed (see `exec()`)
