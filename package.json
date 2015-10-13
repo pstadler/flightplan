@@ -33,7 +33,7 @@
     "fly": "./bin/fly.js"
   },
   "scripts": {
-    "test": "npm run lint; exit 1",
+    "test": "./node_modules/.bin/mocha",
     "lint": "./node_modules/.bin/eslint .",
     "docs": "cd ./docs; node generate.js"
   },
@@ -56,8 +56,10 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "chai": "^3.3.0",
     "eslint": "^1.6.0",
     "markdox": "^0.1.10",
+    "mocha": "^2.3.3",
     "pre-commit": "^1.1.1"
   }
 }

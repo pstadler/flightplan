@@ -72,10 +72,6 @@ cli.on('requireFail', function(name) {
 });
 
 var invoke = function(env) {
-  if(!target) {
-    process.stderr.write('Error: No target specified\n');
-    process.exit(1);
-  }
 
   if(!env.configPath) {
     process.stderr.write(format('Error: %s not found\n', (options.flightplan || 'flightplan.js')));
@@ -89,6 +85,11 @@ var invoke = function(env) {
 
   if(!semver.satisfies(env.modulePackage.version, '>=0.5.0')) {
     process.stderr.write('Error: local flightplan package version should be >=0.5.0\n');
+    process.exit(1);
+  }
+
+  if(!target) {
+    process.stderr.write('Error: No target specified\n');
     process.exit(1);
   }
 
