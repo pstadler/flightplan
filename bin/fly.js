@@ -5,7 +5,8 @@ var Liftoff = require('liftoff')
   , v8flags = require('v8flags')
   , semver = require('semver')
   , cliPackage = require('../package')
-  , nopt = require('nopt');
+  , nopt = require('nopt')
+  , format = require('util').format;
 
 var knownOptions = {
   'flightplan': String,
@@ -28,7 +29,8 @@ var shortHands = {
 var options = nopt(knownOptions, shortHands, process.argv, 2);
 
 if(options.help) {
-  console.log('\n' +
+  process.stdout.write(
+    '\n' +
     '  Usage: fly [task:]target [options]\n\n' +
     '  Options:\n\n' +
     '    -f, --flightplan <file>  path to flightplan\n' +
@@ -36,13 +38,14 @@ if(options.help) {
     '    -d, --debug              enable debug mode\n' +
     '    -C, --no-color           disable color output\n' +
     '    -v, --version            output the version number\n' +
-    '    -h, --help               output usage information\n'
+    '    -h, --help               output usage information\n' +
+    '\n'
   );
   process.exit(1);
 }
 
 if(options.version) {
-  console.log(cliPackage.version);
+  process.stdout.write(format('%s\n', cliPackage.version));
   process.exit(1);
 }
 
@@ -64,31 +67,32 @@ var cli = new Liftoff({
 });
 
 cli.on('requireFail', function(name) {
-  console.error("Error: Unable to load module '" + name + "'");
+  process.stderr.write(format('Error: Unable to load module "%s"\n', name));
   process.exit(1);
 });
 
 var invoke = function(env) {
   if(!target) {
-    console.error('Error: No target specified');
+    process.stderr.write('Error: No target specified\n');
     process.exit(1);
   }
 
   if(!env.configPath) {
-    console.error('Error: ' + (options.flightplan || 'flightplan.js') + ' not found');
+    process.stderr.write(format('Error: %s not found\n', (options.flightplan || 'flightplan.js')));
     process.exit(1);
   }
 
   if(!env.modulePath) {
-    console.error('Error: Local flightplan package not found in ' + env.cwd);
+    process.stderr.write(format('Error: Local flightplan package not found in %s\n', env.cwd));
     process.exit(1);
   }
 
   if(!semver.satisfies(env.modulePackage.version, '>=0.5.0')) {
-    console.error('Error: local flightplan package version should be >=0.5.0');
+    process.stderr.write('Error: local flightplan package version should be >=0.5.0\n');
     process.exit(1);
   }
 
+  /*eslint-disable global-require*/
   process.chdir(env.configBase);
   require(env.configPath);
   var instance = require(env.modulePath);

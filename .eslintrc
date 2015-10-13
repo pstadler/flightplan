@@ -1,0 +1,33 @@
+env:
+  node: true
+
+rules:
+  no-undef: 2
+  no-unused-vars: 2
+  no-use-before-define: 2
+  no-empty: 2
+  no-func-assign: 2
+  no-console: 2
+  callback-return: 2
+  global-require: 2
+  no-path-concat: 2
+  no-extra-semi: 2
+  no-trailing-spaces: 2
+  semi: 2
+  max-len: [2, 100, 4]
+  comma-style: [2, "last", { exceptions: { VariableDeclaration: true } }]
+  comma-spacing: 2
+  consistent-this: [2, "self"]
+  no-unneeded-ternary: 2
+  indent: [2, 2, { SwitchCase: 1 }]
+  no-shadow: 2
+  eqeqeq: 2
+  curly: 2
+  camelcase: 2
+  quotes: [2, "single", "avoid-escape"]
+  space-unary-ops: 2
+  space-infix-ops: 2
+  linebreak-style: 2
+  new-cap: 2
+  no-multiple-empty-lines: [2, { max: 2 }]
+  complexity: [2, 8]

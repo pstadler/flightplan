@@ -33,27 +33,31 @@
     "fly": "./bin/fly.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run lint; exit 1",
+    "lint": "./node_modules/.bin/eslint .",
+    "docs": "cd ./docs; node generate.js"
   },
+  "pre-commit": [
+    "lint"
+  ],
   "dependencies": {
     "byline": "^4.1.1",
-    "chalk": "^1.0.0",
-    "fibers": "^1.0.5",
+    "chalk": "^1.1.1",
+    "fibers": "^1.0.7",
     "interpret": "^0.6.2",
-    "liftoff": "^2.0.0",
-    "nopt": "^3.0.2",
-    "pretty-hrtime": "^1.0.0",
+    "liftoff": "^2.2.0",
+    "nopt": "^3.0.4",
+    "pretty-hrtime": "^1.0.1",
     "prompt": "^0.2.14",
-    "semver": "^4.3.6",
-    "ssh2": "^0.4.8",
+    "semver": "^5.0.3",
+    "ssh2": "^0.4.11",
     "util-extend": "^1.0.1",
-    "v8flags": "^2.0.7"
+    "v8flags": "^2.0.10"
   },
   "license": "MIT",
   "devDependencies": {
-    "gulp": "^3.8.10",
-    "gulp-jshint": "^1.9.0",
-    "jshint-stylish": "^2.0.0",
-    "markdox": "^0.1.8"
+    "eslint": "^1.6.0",
+    "markdox": "^0.1.10",
+    "pre-commit": "^1.1.1"
   }
 }

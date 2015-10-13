@@ -85,7 +85,7 @@ plan.remote(function(remote) { /* ... */ });
 
 <!-- DOCS -->
 
-<!-- Start lib/index.js -->
+<!-- Start ../lib/index.js -->
 
 ## Flightplan
 
@@ -360,9 +360,9 @@ is displayed after the flight has been aborted.
 plan.abort('Severe turbulences over the atlantic ocean!');
 ```
 
-<!-- End lib/index.js -->
+<!-- End ../lib/index.js -->
 
-<!-- Start lib/transport/index.js -->
+<!-- Start ../lib/transport/index.js -->
 
 ## Transport
 
@@ -662,7 +662,7 @@ context.
 transport.debug('Copying files to remote hosts');
 ```
 
-<!-- End lib/transport/index.js -->
+<!-- End ../lib/transport/index.js -->
 
 <!-- ENDDOCS -->
 
