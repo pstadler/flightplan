@@ -1,4 +1,6 @@
-# Flightplan [![NPM version][npm-version-image]][npm-url] [![Build Status][build-status-image]][build-status-url]
+# Flightplan
+
+[![NPM version][npm-version-image]][npm-url] [![Build Status][build-status-image]][build-status-url]
 [![Build Status][coverage-image]][coverage-url] [![NPM downloads][npm-downloads-image]][npm-url] [![Dependency Status][dependencies-image]][dependencies-url]
 
 Run sequences of shell commands against local and remote hosts.
