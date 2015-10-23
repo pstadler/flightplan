@@ -33,9 +33,12 @@
     "fly": "./bin/fly.js"
   },
   "scripts": {
+    "docs": "cd ./docs; node generate.js",
     "test": "./node_modules/.bin/mocha",
     "lint": "./node_modules/.bin/eslint .",
-    "docs": "cd ./docs; node generate.js"
+    "coverage": "rm -rf ./coverage; ./node_modules/.bin/istanbul cover --dir coverage/lib ./node_modules/.bin/_mocha -- -R spec; ./node_modules/.bin/istanbul report",
+    "coverage-lcov": "rm -rf ./coverage; ./node_modules/.bin/istanbul cover --dir coverage/lib --report lcovonly ./node_modules/.bin/_mocha -- -R spec; ./node_modules/.bin/istanbul report lcovonly",
+    "coveralls": "npm run coverage-lcov && cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "pre-commit": [
     "lint"
@@ -57,9 +60,12 @@
   "license": "MIT",
   "devDependencies": {
     "chai": "^3.3.0",
+    "coveralls": "^2.11.4",
     "eslint": "^1.6.0",
+    "istanbul": "^0.4.0",
     "markdox": "^0.1.10",
     "mocha": "^2.3.3",
-    "pre-commit": "^1.1.1"
+    "pre-commit": "^1.1.1",
+    "sinon": "^1.17.2"
   }
 }
