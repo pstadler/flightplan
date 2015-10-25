@@ -66,6 +66,7 @@
     "markdox": "^0.1.10",
     "mocha": "^2.3.3",
     "pre-commit": "^1.1.1",
+    "proxyquire": "^1.7.3",
     "sinon": "^1.17.2"
   }
 }

@@ -93,10 +93,9 @@ var invoke = function(env) {
     process.exit(1);
   }
 
-  /*eslint-disable global-require*/
   process.chdir(env.configBase);
-  require(env.configPath);
-  var instance = require(env.modulePath);
+  require(env.configPath); // eslint-disable-line global-require
+  var instance = require(env.modulePath); // eslint-disable-line global-require
   instance.run(task, target, options);
 };
 

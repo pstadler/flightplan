@@ -1,12 +1,16 @@
 var spawnSync = require('child_process').spawnSync
+  , util = require('util')
+  , path = require('path')
+  , proxyquire = require('proxyquire')
+  , sinon = require('sinon')
   , expect = require('chai').expect
   , currentVersion = require('../package.json').version;
 
-var COVERAGE_COUNT = 0;
+var EXEC_COUNT = 0;
 
 function exec(args) {
   var cmdPrefix = process.env.running_under_istanbul
-    ? './node_modules/.bin/istanbul cover --dir coverage/fly/' + (COVERAGE_COUNT++) +
+    ? './node_modules/.bin/istanbul cover --dir coverage/fly/' + (EXEC_COUNT++) +
       ' --report lcovonly --print none '
     : '';
   var argsSeparator = process.env.running_under_istanbul
@@ -27,6 +31,11 @@ describe('fly', function() {
     it('should complain about missing flightplan.js', function() {
       expect(exec().stderr).to.match(/Error: .* not found/);
       expect(exec('test').stderr).to.match(/Error: .* not found/);
+    });
+
+    it('should complain about missing target', function() {
+      expect(exec('--flightplan=test/fixtures/flightplan.js').stderr)
+        .to.contain('Error: No target specified');
     });
   });
 
@@ -55,6 +64,11 @@ describe('fly', function() {
         .to.contain('no work to be done for task');
     });
 
+    it('should handle <task>:<target>', function() {
+      expect(exec('-f test/fixtures/flightplan.js foo:test').stdout)
+        .to.match(/no work to be done for task .*foo/);
+    });
+
     it('should complain about missing file', function() {
       expect(exec('--flightplan=foo.js').stderr).to.contain('foo.js not found');
     });
@@ -63,7 +77,53 @@ describe('fly', function() {
       expect(exec('--flightplan=test/fixtures/empty.coffee').stderr)
         .to.contain('Unable to load module "coffee-script/register"');
     });
+  });
 
+  describe('integration', function() {
+    var originalProcess;
+
+    before(function() {
+      originalProcess = util._extend(process);
+    });
+
+    it('should pass all args to flightplan', function(done) {
+      var runSpy = sinon.spy()
+        , MOCKS = {};
+
+      MOCKS[path.resolve(__dirname, '..', 'index.js')] = {
+        run: runSpy
+      };
+
+      process.argv = [
+        'node', 'fly',
+        '--flightplan=test/fixtures/flightplan.js',
+        '--username=testuser',
+        '--no-color',
+        '-d',
+        '--custom-var=custom',
+        'task:target'
+      ];
+
+      proxyquire('../bin/fly.js', MOCKS);
+      // wait a cycle until invoke was called
+      setImmediate(function() {
+        expect(runSpy.calledOnce).to.be.true;
+
+        var args = runSpy.lastCall.args;
+        expect(args[0]).to.equal('task');
+        expect(args[1]).to.equal('target');
+        expect(args[2]).to.have.property('flightplan', 'test/fixtures/flightplan.js');
+        expect(args[2]).to.have.property('username', 'testuser');
+        expect(args[2]).to.have.property('color', false);
+        expect(args[2]).to.have.property('debug', true);
+        expect(args[2]).to.have.property('custom-var', 'custom');
+        done();
+      });
+    });
+
+    after(function() {
+      process = originalProcess; // eslint-disable-line no-undef
+    });
   });
 
 });
