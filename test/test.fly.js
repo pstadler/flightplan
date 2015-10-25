@@ -1,5 +1,4 @@
 var spawnSync = require('child_process').spawnSync
-  , util = require('util')
   , path = require('path')
   , proxyquire = require('proxyquire')
   , sinon = require('sinon')
@@ -79,20 +78,11 @@ describe('fly', function() {
     });
   });
 
-  describe('integration', function() {
-    var originalProcess;
-
-    before(function() {
-      originalProcess = util._extend(process);
-    });
-
-    it('should pass all args to flightplan', function(done) {
-      var runSpy = sinon.spy()
+  describe('invocation', function() {
+    it('should pass arguments to flightplan', function(done) {
+      var restoreProcessArgv = process.argv
+        , runSpy = sinon.spy()
         , MOCKS = {};
-
-      MOCKS[path.resolve(__dirname, '..', 'index.js')] = {
-        run: runSpy
-      };
 
       process.argv = [
         'node', 'fly',
@@ -103,6 +93,10 @@ describe('fly', function() {
         '--custom-var=custom',
         'task:target'
       ];
+
+      MOCKS[path.resolve(__dirname, '..', 'index.js')] = {
+        run: runSpy
+      };
 
       proxyquire('../bin/fly.js', MOCKS);
       // wait a cycle until invoke was called
@@ -119,10 +113,8 @@ describe('fly', function() {
         expect(args[2]).to.have.property('custom-var', 'custom');
         done();
       });
-    });
 
-    after(function() {
-      process = originalProcess; // eslint-disable-line no-undef
+      process.argv = restoreProcessArgv;
     });
   });
 
