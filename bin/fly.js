@@ -49,7 +49,7 @@ if(options.version) {
   process.exit(1);
 }
 
-var task = 'default';
+var task;
 var target = options.argv.remain.length ? options.argv.remain[0] : null;
 
 if(target && target.indexOf(':') !== -1) {

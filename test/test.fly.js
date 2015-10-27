@@ -1,28 +1,9 @@
-var spawnSync = require('child_process').spawnSync
-  , path = require('path')
+var path = require('path')
   , proxyquire = require('proxyquire')
   , sinon = require('sinon')
   , expect = require('chai').expect
+  , exec = require('./utils/exec')
   , currentVersion = require('../package.json').version;
-
-var EXEC_COUNT = 0;
-
-function exec(args) {
-  var cmdPrefix = process.env.running_under_istanbul
-    ? './node_modules/.bin/istanbul cover --dir coverage/fly/' + (EXEC_COUNT++) +
-      ' --report lcovonly --print none '
-    : '';
-  var argsSeparator = process.env.running_under_istanbul
-    ? ' -- '
-    : ' ';
-
-  args = cmdPrefix + './bin/fly.js' + argsSeparator + args;
-  args = args.split(' ');
-  var command = args.shift();
-
-  var result = spawnSync(command, args, { encoding: 'utf8' });
-  return result;
-}
 
 describe('fly', function() {
 
