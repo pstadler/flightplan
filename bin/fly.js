@@ -22,8 +22,10 @@ var shortHands = {
   'u': ['--username'],
   'd': ['--debug'],
   'C': ['--no-color'],
+  't': ['--targets'],
+  'T': ['--tasks'],
   'v': ['--version'],
-  'h': ['--help']
+  'h': ['--help'],
 };
 
 var options = nopt(knownOptions, shortHands, process.argv, 2);
@@ -37,6 +39,8 @@ if(options.help) {
     '    -u, --username <name>    user for connecting to remote hosts\n' +
     '    -d, --debug              enable debug mode\n' +
     '    -C, --no-color           disable color output\n' +
+    '    -t, --targets            output available targets\n' +
+    '    -T, --tasks              output available tasks\n' +
     '    -v, --version            output the version number\n' +
     '    -h, --help               output usage information\n' +
     '\n'
@@ -88,14 +92,39 @@ var invoke = function(env) {
     process.exit(1);
   }
 
+  process.chdir(env.configBase);
+
+  require(env.configPath); // eslint-disable-line global-require
+  var instance = require(env.modulePath); // eslint-disable-line global-require
+
+  if(options.targets) {
+    process.stdout.write(
+      'Available targets:\n' +
+      '  ' + instance.availableTargets().join('\n  ') + '\n'
+    );
+
+    process.exit(0);
+  }
+
+  if(options.tasks) {
+    process.stdout.write(
+      'Available tasks:\n' +
+      '  ' + instance.availableTasks().join('\n  ') + '\n'
+    );
+
+    process.exit(0);
+  }
+
   if(!target) {
-    process.stderr.write('Error: No target specified\n');
+    process.stderr.write(
+      'Error: No target specified. Use `--help` for more information\n\n' +
+      'Available targets:\n' +
+      '  ' + instance.availableTargets().join('\n  ') + '\n'
+    );
+
     process.exit(1);
   }
 
-  process.chdir(env.configBase);
-  require(env.configPath); // eslint-disable-line global-require
-  var instance = require(env.modulePath); // eslint-disable-line global-require
   instance.run(task, target, options);
 };
 
