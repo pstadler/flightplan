@@ -9,15 +9,19 @@ var expect = require('chai').expect
 describe('flightplan', function() {
 
   var LOGGER_STUB = {
-    warn: sinon.stub(),
     info: sinon.stub(),
+    warn: sinon.stub(),
     error: sinon.stub()
   };
+
+  var FLIGHT_STUB = flight;
+  FLIGHT_STUB.run = sinon.stub();
 
   var MOCKS = {
     './logger': function() {
       return LOGGER_STUB;
-    }
+    },
+    './flight': FLIGHT_STUB
   };
 
   var plan;
@@ -34,6 +38,8 @@ describe('flightplan', function() {
     Object.keys(LOGGER_STUB).forEach(function(k) {
       LOGGER_STUB[k].reset();
     });
+
+    FLIGHT_STUB.run.reset();
   });
 
   describe('#target()', function() {
@@ -228,28 +234,31 @@ describe('flightplan', function() {
     it('should run the default task if none is specified', function() {
       plan.target('target', fixtures.HOST);
 
-      var runtime;
-      plan.local(function() {
-        runtime = plan.runtime;
-      });
+      plan.local(function() {});
 
       plan.run(null, 'target');
 
-      expect(runtime.task).to.equal('default');
+      expect(FLIGHT_STUB.run.calledOnce).to.be.true;
     });
 
     it('should run multiple flights in correct order', function() {
-      var callStack = [];
+      var FN1 = function() {}
+        , FN2 = function() {}
+        , FN3 = function() {}
+        , FN4 = function() {};
 
       plan.target('target', fixtures.HOST);
-      plan.local('task', function() { callStack.push(1); });
-      plan.local('task', function() { callStack.push(2); });
-      plan.local('anothertask', function() { callStack.push(3); });
-      plan.local('task', function() { callStack.push(4); });
+      plan.local('task', FN1);
+      plan.local('task', FN2);
+      plan.local('anothertask', FN3);
+      plan.local('task', FN4);
 
       plan.run('task', 'target');
 
-      expect(callStack).to.deep.equal([1, 2, 4]);
+      expect(FLIGHT_STUB.run.calledThrice).to.be.true;
+      expect(FLIGHT_STUB.run.firstCall.args[1]).to.equal(FN1);
+      expect(FLIGHT_STUB.run.secondCall.args[1]).to.equal(FN2);
+      expect(FLIGHT_STUB.run.thirdCall.args[1]).to.equal(FN4);
     });
 
     it('should execute a valid target without tasks', function() {
@@ -268,10 +277,7 @@ describe('flightplan', function() {
         'another-flag': true
       });
 
-      var runtime;
-      plan.local('task', function() {
-        runtime = plan.runtime;
-      });
+      plan.local('task', function() {});
 
       plan.run('task', 'target', {
         color: false,
@@ -280,24 +286,24 @@ describe('flightplan', function() {
       });
 
       expect(chalk.enabled).to.be.false;
-      expect(runtime).to.not.be.null;
-      expect(runtime.options.username).to.equal('testuser');
-      expect(runtime.options['some-flag']).to.be.true;
-      expect(runtime.options['another-flag']).to.be.false;
-      expect(runtime.hosts[0]).to.deep.equal({ host: 'example.com', username: 'testuser' });
+
+      var contextArg = FLIGHT_STUB.run.lastCall.args[2];
+      expect(contextArg).to.not.be.null;
+      expect(contextArg.options.username).to.equal('testuser');
+      expect(contextArg.options['some-flag']).to.be.true;
+      expect(contextArg.options['another-flag']).to.be.false;
+      expect(contextArg.hosts[0]).to.deep.equal({ host: 'example.com', username: 'testuser' });
     });
 
     it('should handle dynamic hosts configuration', function() {
       plan.target('target', fixtures.DYNAMIC_HOST);
 
-      var runtime;
-      plan.local('task', function() {
-        runtime = plan.runtime;
-      });
+      plan.local('task', function() {});
 
       plan.run('task', 'target');
 
-      expect(runtime.hosts[0]).to.deep.equal({ host: 'example.com' });
+      var contextArg = FLIGHT_STUB.run.lastCall.args[2];
+      expect(contextArg.hosts[0]).to.deep.equal({ host: 'example.com' });
     });
 
     it('should handle errors in dynamic hosts configuration', function() {
