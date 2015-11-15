@@ -25,7 +25,7 @@ var shortHands = {
   't': ['--targets'],
   'T': ['--tasks'],
   'v': ['--version'],
-  'h': ['--help'],
+  'h': ['--help']
 };
 
 var options = nopt(knownOptions, shortHands, process.argv, 2);
