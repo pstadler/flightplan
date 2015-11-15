@@ -52,7 +52,7 @@ describe('fly', function() {
     });
   });
 
-  describe('--flightplan=<file>', function() {
+  describe('--flightplan', function() {
     it('should handle --flightplan', function() {
       expect(exec('--flightplan=test/fixtures/flightplan.js test').stdout)
         .to.contain('Flightplan finished');
