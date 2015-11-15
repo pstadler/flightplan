@@ -1,7 +1,7 @@
-var path = require('path')
+var expect = require('chai').expect
   , proxyquire = require('proxyquire')
   , sinon = require('sinon')
-  , expect = require('chai').expect
+  , path = require('path')
   , exec = require('./utils/exec')
   , currentVersion = require('../package.json').version;
 
