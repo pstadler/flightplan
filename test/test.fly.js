@@ -15,7 +15,8 @@ describe('fly', function() {
 
     it('should complain about missing target', function() {
       expect(exec('--flightplan=test/fixtures/flightplan.js').stderr)
-        .to.contain('Error: No target specified');
+        .to.contain('Error: No target specified')
+        .to.match(/Available targets[\s\S]*test/);
     });
   });
 
@@ -33,15 +34,33 @@ describe('fly', function() {
     });
   });
 
+  describe('--targets', function() {
+    it('should display targets', function() {
+      expect(exec('-f test/fixtures/flightplan.js --targets').stdout)
+        .to.match(/Available targets[\s\S]*test/);
+      expect(exec('-f test/fixtures/flightplan.js -t').stdout)
+        .to.match(/Available targets[\s\S]*test/);
+    });
+  });
+
+  describe('--tasks', function() {
+    it('should display tasks', function() {
+      expect(exec('-f test/fixtures/flightplan.js --tasks').stdout)
+        .to.match(/Available tasks[\s\S]*default/);
+      expect(exec('-f test/fixtures/flightplan.js -T').stdout)
+        .to.match(/Available tasks[\s\S]*default/);
+    });
+  });
+
   describe('--flightplan=<file>', function() {
     it('should handle --flightplan', function() {
       expect(exec('--flightplan=test/fixtures/flightplan.js test').stdout)
-        .to.contain('no work to be done for task');
+        .to.contain('Flightplan finished');
     });
 
     it('should handle -f', function() {
       expect(exec('-f test/fixtures/flightplan.js test').stdout)
-        .to.contain('no work to be done for task');
+        .to.contain('Flightplan finished');
     });
 
     it('should handle <task>:<target>', function() {
