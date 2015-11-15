@@ -1,10 +1,12 @@
 var expect = require('chai').expect
   , proxyquire = require('proxyquire')
   , sinon = require('sinon')
+  , extend = require('util')._extend
   , runWithinFiber = require('./utils/run-within-fiber')
   , fixtures = require('./fixtures')
   , Shell = require('../lib/transport/shell')
-  , SSH = require('../lib/transport/ssh');
+  , SSH = require('../lib/transport/ssh')
+  , errors = require('../lib/errors');
 
 describe('flight', function() {
 
@@ -59,7 +61,7 @@ describe('flight', function() {
 describe('flight/local', function() {
 
   var LOGGER_STUB = {
-    info: sinon.stub(),
+    info: sinon.stub()
   };
 
   var SHELL_STUB_INSTANCE = sinon.createStubInstance(Shell);
@@ -113,6 +115,7 @@ describe('flight/remote', function() {
 
   var LOGGER_STUB = {
     info: sinon.stub(),
+    warn: sinon.stub()
   };
 
   var SSH_STUB_INSTANCE = sinon.createStubInstance(SSH);
@@ -164,6 +167,39 @@ describe('flight/remote', function() {
 
       expect(FN.calledTwice).to.be.true;
       expect(FN.lastCall.args).to.deep.equal([SSH_STUB_INSTANCE]);
+    });
+
+    it('should throw when unable to connect', function() {
+      var ERROR_MOCKS = extend({}, MOCKS);
+      ERROR_MOCKS['../transport/ssh'] = function() {
+        throw new Error('Unable to connect');
+      };
+
+      var failingRemote = proxyquire('../lib/flight/remote', ERROR_MOCKS);
+
+      var FN = sinon.stub()
+        , CONTEXT = { hosts: fixtures.HOSTS };
+
+      runWithinFiber(function() {
+        expect(function() { failingRemote.run(FN, CONTEXT); })
+          .to.throw(errors.ConnectionFailedError);
+      });
+    });
+
+    it('should not throw when failsafe is set', function() {
+      var ERROR_MOCKS = extend({}, MOCKS);
+      ERROR_MOCKS['../transport/ssh'] = function() {
+        throw new Error('Unable to connect');
+      };
+
+      var failingRemote = proxyquire('../lib/flight/remote', ERROR_MOCKS);
+
+      var FN = sinon.stub()
+        , CONTEXT = { hosts: [{ host: 'example.org', failsafe: true }] };
+
+      runWithinFiber(function() { failingRemote.run(FN, CONTEXT); });
+
+      expect(LOGGER_STUB.warn.lastCall.args[0]).to.contain('Safely failed');
     });
   });
 
