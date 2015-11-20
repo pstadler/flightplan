@@ -2,17 +2,13 @@ var expect = require('chai').expect
   , sinon = require('sinon')
   , proxyquire = require('proxyquire')
   , fixtures = require('./fixtures')
-  , commands = require('../lib/transport/commands');
+  , COMMANDS = require('../lib/transport/commands');
 
 describe('transport', function() {
 
-  var COMMANDS = ['exec', 'sudo', 'transfer', 'prompt', 'waitFor', 'with', 'silent',
-                  'verbose', 'failsafe', 'unsafe', 'log', 'debug', 'close'].concat(commands);
-
   var LOGGER_STUB = {
-    info: sinon.stub(),
-    warn: sinon.stub(),
-    error: sinon.stub()
+    user: sinon.stub(),
+    debug: sinon.stub()
   };
 
   var MOCKS;
@@ -34,10 +30,9 @@ describe('transport', function() {
   });
 
   describe('initialize', function() {
-    it('should expose expected methods', function() {
-      COMMANDS.forEach(function(command) {
-        expect(transport[command]).to.be.a('function');
-      });
+    it('should set the correct options', function() {
+      expect(transport._options.silent).to.be.false;
+      expect(transport._options.failsafe).to.be.false;
     });
 
     it('should correctly initialize the logger', function() {
@@ -58,51 +53,27 @@ describe('transport', function() {
     });
   });
 
-  describe('command shortcuts', function() {
+  describe('#exec()', function() {
     it('should pass the correct command to #_exec()', function() {
       transport._exec = sinon.stub();
 
-      transport[commands[0]]();
+      transport.exec('cmd');
 
       expect(transport._exec.calledOnce).to.be.true;
       expect(transport._exec.lastCall.args).to.deep.equal([
-        commands[0],
+        'cmd',
         {}
       ]);
     });
 
-    it('should pass arguments to #_exec()', function() {
+    it('should pass the correct options to #_exec()', function() {
       transport._exec = sinon.stub();
 
-      transport[commands[0]]('args');
+      transport.exec('cmd', fixtures.COMMAND_OPTIONS);
 
       expect(transport._exec.calledOnce).to.be.true;
       expect(transport._exec.lastCall.args).to.deep.equal([
-        commands[0] + ' args',
-        {}
-      ]);
-    });
-
-    it('should pass options to #_exec()', function() {
-      transport._exec = sinon.stub();
-
-      transport[commands[0]](fixtures.COMMAND_OPTIONS);
-
-      expect(transport._exec.calledOnce).to.be.true;
-      expect(transport._exec.lastCall.args).to.deep.equal([
-        commands[0],
-        fixtures.COMMAND_OPTIONS
-      ]);
-    });
-
-    it('should pass arguments and options to #_exec()', function() {
-      transport._exec = sinon.stub();
-
-      transport[commands[0]]('args', fixtures.COMMAND_OPTIONS);
-
-      expect(transport._exec.calledOnce).to.be.true;
-      expect(transport._exec.lastCall.args).to.deep.equal([
-        commands[0] + ' args',
+        'cmd',
         fixtures.COMMAND_OPTIONS
       ]);
     });
@@ -147,6 +118,211 @@ describe('transport', function() {
       transport.sudo('cmd', { user: 'not-root' });
 
       expect(transport._exec.lastCall.args[0]).to.equal("sudo -u not-root -i bash -c 'cmd'");
+    });
+  });
+
+  describe('#prompt()', function() {
+  });
+
+  describe('#waitFor()', function() {
+  });
+
+  describe('#with()', function() {
+    it('should handle commands', function() {
+      transport._exec = sinon.stub();
+
+      transport.with('outer-cmd', function() {
+        transport.exec('inner-cmd');
+
+        expect(transport._exec.calledOnce).to.be.true;
+        expect(transport._exec.lastCall.args).to.deep.equal([
+          'outer-cmd && inner-cmd',
+          {}
+        ]);
+      });
+
+      transport.exec('cmd');
+
+      expect(transport._exec.lastCall.args).to.deep.equal([
+        'cmd',
+        {}
+      ]);
+    });
+
+    it('should handle command nesting', function() {
+      transport._exec = sinon.stub();
+
+      transport.with('outer-cmd', function() {
+        transport.with('another-cmd', function() {
+          transport.exec('inner-cmd');
+
+          expect(transport._exec.calledOnce).to.be.true;
+          expect(transport._exec.lastCall.args).to.deep.equal([
+            'outer-cmd && another-cmd && inner-cmd',
+            {}
+          ]);
+        });
+      });
+
+    });
+
+    it('should handle options', function() {
+      transport._exec = sinon.stub();
+
+      transport.with({ outerOption1: true }, function() {
+        transport.exec('inner-cmd');
+
+        expect(transport._options.outerOption1).to.be.true;
+        expect(transport._exec.calledOnce).to.be.true;
+        expect(transport._exec.lastCall.args).to.deep.equal([
+          'inner-cmd',
+          {}
+        ]);
+      });
+
+      expect(transport._options.outerOption1).to.be.undefined;
+    });
+
+    it('should handle options nesting', function() {
+      transport._exec = sinon.stub();
+
+      transport.with({ outerOption1: true, outerOption2: true }, function() {
+        transport.with({ outerOption1: false, innerOption1: true }, function() {
+          expect(transport._options.outerOption1).to.be.false;
+          expect(transport._options.outerOption2).to.be.true;
+          expect(transport._options.innerOption1).to.be.true;
+        });
+
+        expect(transport._options.outerOption1).to.be.true;
+      });
+
+      expect(transport._options.outerOption1).to.be.undefined;
+    });
+
+    it('should handle commands and options', function() {
+      transport._exec = sinon.stub();
+
+      transport.with('outer-cmd', { outerOption1: true }, function() {
+        transport.exec('inner-cmd');
+
+        expect(transport._options.outerOption1).to.be.true;
+        expect(transport._exec.calledOnce).to.be.true;
+        expect(transport._exec.lastCall.args).to.deep.equal([
+          'outer-cmd && inner-cmd',
+          {}
+        ]);
+      });
+    });
+  });
+
+  describe('#silent()', function() {
+    it('should set the correct flag', function() {
+      transport.silent();
+
+      expect(transport._options.silent).to.be.true;
+    });
+  });
+
+  describe('#verbose()', function() {
+    it('should set the correct flag', function() {
+      transport.silent();
+      transport.verbose();
+
+      expect(transport._options.silent).to.be.false;
+    });
+  });
+
+  describe('#failsafe()', function() {
+    it('should set the correct flag', function() {
+      transport.failsafe();
+
+      expect(transport._options.failsafe).to.be.true;
+    });
+  });
+
+  describe('#unsafe()', function() {
+    it('should set the correct flag', function() {
+      transport.failsafe();
+      transport.unsafe();
+
+      expect(transport._options.failsafe).to.be.false;
+    });
+  });
+
+  describe('#log()', function() {
+    it('should log messages', function() {
+      transport.log('test message');
+
+      expect(LOGGER_STUB.user.calledOnce).to.be.true;
+      expect(LOGGER_STUB.user.lastCall.args[0]).to.equal('test message');
+    });
+  });
+
+  describe('#debug()', function() {
+    it('should log debug messages', function() {
+      transport.debug('test message');
+
+      expect(LOGGER_STUB.debug.calledOnce).to.be.true;
+      expect(LOGGER_STUB.debug.lastCall.args[0]).to.equal('test message');
+    });
+  });
+
+  describe('#close()', function() {
+  });
+
+  describe('command shortcuts', function() {
+    it('should be exposed', function() {
+      COMMANDS.forEach(function(command) {
+        expect(transport[command]).to.be.a('function');
+      });
+    });
+
+    it('should pass the correct command to #_exec()', function() {
+      transport._exec = sinon.stub();
+
+      transport[COMMANDS[0]]();
+
+      expect(transport._exec.calledOnce).to.be.true;
+      expect(transport._exec.lastCall.args).to.deep.equal([
+        COMMANDS[0],
+        {}
+      ]);
+    });
+
+    it('should pass arguments to #_exec()', function() {
+      transport._exec = sinon.stub();
+
+      transport[COMMANDS[0]]('args');
+
+      expect(transport._exec.calledOnce).to.be.true;
+      expect(transport._exec.lastCall.args).to.deep.equal([
+        COMMANDS[0] + ' args',
+        {}
+      ]);
+    });
+
+    it('should pass options to #_exec()', function() {
+      transport._exec = sinon.stub();
+
+      transport[COMMANDS[0]](fixtures.COMMAND_OPTIONS);
+
+      expect(transport._exec.calledOnce).to.be.true;
+      expect(transport._exec.lastCall.args).to.deep.equal([
+        COMMANDS[0],
+        fixtures.COMMAND_OPTIONS
+      ]);
+    });
+
+    it('should pass arguments and options to #_exec()', function() {
+      transport._exec = sinon.stub();
+
+      transport[COMMANDS[0]]('args', fixtures.COMMAND_OPTIONS);
+
+      expect(transport._exec.calledOnce).to.be.true;
+      expect(transport._exec.lastCall.args).to.deep.equal([
+        COMMANDS[0] + ' args',
+        fixtures.COMMAND_OPTIONS
+      ]);
     });
   });
 
