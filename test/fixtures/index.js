@@ -19,9 +19,14 @@ var HOST_OPTIONS = {
   option1: 'value1'
 };
 
+var COMMAND_OPTIONS = {
+  failsafe: true
+};
+
 module.exports = {
   HOST: HOST,
   HOSTS: HOSTS,
   DYNAMIC_HOST: DYNAMIC_HOST,
-  HOST_OPTIONS: HOST_OPTIONS
+  HOST_OPTIONS: HOST_OPTIONS,
+  COMMAND_OPTIONS: COMMAND_OPTIONS
 };
