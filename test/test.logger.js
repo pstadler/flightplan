@@ -65,7 +65,7 @@ after(function() {
   process.stdout.write('Logger method styles\n\n');
 
   LOG_METHODS.forEach(function(method) {
-    process.stdout.write(method + '\t\t');
-    _logger[method](method + '     \t██');
+    process.stdout.write(method + new Array(10 - method.length).join(' '));
+    _logger[method](method);
   });
 });
