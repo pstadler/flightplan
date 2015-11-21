@@ -79,7 +79,7 @@ describe('fly', function() {
   });
 
   describe('invocation', function() {
-    it('should pass arguments to flightplan', function(done) {
+    it('should pass arguments to flightplan', function(testDone) {
       var restoreProcessArgv = process.argv
         , runSpy = sinon.spy()
         , MOCKS = {};
@@ -111,7 +111,8 @@ describe('fly', function() {
         expect(args[2]).to.have.property('color', false);
         expect(args[2]).to.have.property('debug', true);
         expect(args[2]).to.have.property('custom-var', 'custom');
-        done();
+
+        testDone();
       });
 
       process.argv = restoreProcessArgv;

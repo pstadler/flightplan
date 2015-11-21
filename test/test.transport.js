@@ -2,6 +2,7 @@ var expect = require('chai').expect
   , sinon = require('sinon')
   , proxyquire = require('proxyquire')
   , fixtures = require('./fixtures')
+  , runWithinFiber = require('./utils/run-within-fiber')
   , COMMANDS = require('../lib/transport/commands');
 
 describe('transport', function() {
@@ -57,9 +58,16 @@ describe('transport', function() {
     it('should pass the correct command to #_exec()', function() {
       transport._exec = sinon.stub();
 
-      transport.exec('cmd');
+      transport.exec();
 
       expect(transport._exec.calledOnce).to.be.true;
+      expect(transport._exec.lastCall.args).to.deep.equal([
+        '',
+        {}
+      ]);
+
+      transport.exec('cmd');
+
       expect(transport._exec.lastCall.args).to.deep.equal([
         'cmd',
         {}
@@ -125,6 +133,19 @@ describe('transport', function() {
   });
 
   describe('#waitFor()', function() {
+    it('should wait until done', function() {
+      var RESULT = { result: 'test' };
+
+      runWithinFiber(function() {
+        var result = transport.waitFor(function(done) {
+          setImmediate(function() {
+            done(RESULT);
+          });
+        });
+
+        expect(result).to.deep.equal({ result: 'test' });
+      });
+    });
   });
 
   describe('#with()', function() {
@@ -268,6 +289,10 @@ describe('transport', function() {
   });
 
   describe('#close()', function() {
+    it('should be an function', function() {
+      expect(transport.close).to.be.a('function');
+      expect(transport.close()).to.be.undefined;
+    });
   });
 
   describe('command shortcuts', function() {
