@@ -336,11 +336,25 @@ describe('flightplan', function() {
     });
 
     it('should catch uncaught exceptions and exit', function() {
+      var ERROR = new Error('some error');
+
       var fn = process.on.withArgs('uncaughtException').lastCall.args[1];
 
-      fn(new Error('some error'));
+      fn(ERROR);
 
-      expect(LOGGER_STUB.error.lastCall.args[0]).to.contain('some error');
+      expect(LOGGER_STUB.error.lastCall.args[0]).to.equal(ERROR.stack);
+      expect(process.exit.calledOnce).to.be.true;
+      expect(process.exit.lastCall.args[0]).to.equal(1);
+    });
+
+    it('should catch uncaught custom errors and exit', function() {
+      var ERROR = new errors.BaseError('some custom error');
+
+      var fn = process.on.withArgs('uncaughtException').lastCall.args[1];
+
+      fn(ERROR);
+
+      expect(LOGGER_STUB.error.lastCall.args[0]).to.equal(ERROR.message);
       expect(process.exit.calledOnce).to.be.true;
       expect(process.exit.lastCall.args[0]).to.equal(1);
     });
