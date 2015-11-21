@@ -169,7 +169,7 @@ describe('flight/remote', function() {
       expect(FN.lastCall.args).to.deep.equal([SSH_STUB_INSTANCE]);
     });
 
-    it('should throw when unable to connect', function() {
+    it('should throw when unable to connect', function(testDone) {
       var ERROR_MOCKS = extend({}, MOCKS);
       ERROR_MOCKS['../transport/ssh'] = function() {
         throw new Error('Unable to connect');
@@ -183,6 +183,8 @@ describe('flight/remote', function() {
       runWithinFiber(function() {
         expect(function() { failingRemote.run(FN, CONTEXT); })
           .to.throw(errors.ConnectionFailedError);
+
+        testDone();
       });
     });
 
