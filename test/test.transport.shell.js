@@ -114,16 +114,14 @@ describe('transport/shell', function() {
         var shell = new Shell(CONTEXT);
         var result = shell._exec('invalid-command', { failsafe: true });
 
-        expect(result).to.deep.equal({
-          code: 127,
-          stdout: null,
-          stderr: '/bin/sh: invalid-command: command not found\n'
-        });
+        expect(result).to.have.property('code', 127);
+        expect(result).to.have.property('stdout', null);
+        expect(result).to.have.property('stderr').that.contains('not found');
 
         expect(LOGGER_STUB.command.calledOnce).to.be.true;
         expect(LOGGER_STUB.command.lastCall.args[0]).to.contain('invalid-command');
         expect(LOGGER_STUB.stdwarn.calledOnce).to.be.true;
-        expect(LOGGER_STUB.stdwarn.lastCall.args[0]).to.contain('command not found');
+        expect(LOGGER_STUB.stdwarn.lastCall.args[0]).to.contain('not found');
         expect(LOGGER_STUB.warn.lastCall.args[0]).to.contain('failed safely');
 
         testDone();
@@ -141,7 +139,7 @@ describe('transport/shell', function() {
         expect(LOGGER_STUB.command.calledOnce).to.be.true;
         expect(LOGGER_STUB.command.lastCall.args[0]).to.contain('invalid-command');
         expect(LOGGER_STUB.stderr.calledOnce).to.be.true;
-        expect(LOGGER_STUB.stderr.lastCall.args[0]).to.contain('command not found');
+        expect(LOGGER_STUB.stderr.lastCall.args[0]).to.contain('not found');
         expect(LOGGER_STUB.error.lastCall.args[0]).to.contain('failed');
 
         testDone();
