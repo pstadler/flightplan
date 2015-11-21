@@ -55,4 +55,14 @@ describe('logger', function() {
     });
   });
 
+  it('displays a list of available log types and their styles at this place', function() {
+    require('chalk').enabled = true; // eslint-disable-line global-require
+
+    var _logger = logger({ debug: true, prefix: 'prefix' });
+
+    LOG_METHODS.forEach(function(method) {
+      _logger[method]('#' + method + '()');
+    });
+  });
+
 });
