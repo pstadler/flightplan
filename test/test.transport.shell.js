@@ -89,6 +89,24 @@ describe('transport/shell', function() {
       });
     });
 
+    it('should correctly merge options with transport options', function(testDone) {
+      runWithinFiber(function() {
+        var shell = new Shell(CONTEXT);
+
+        shell.silent();
+
+        shell._exec('echo "hello world"');
+
+        expect(LOGGER_STUB.stdout.notCalled).to.be.true;
+
+        shell._exec('echo "hello world"', { silent: false });
+
+        expect(LOGGER_STUB.stdout.notCalled).to.be.false;
+
+        testDone();
+      });
+    });
+
     it('should correctly handle the silent option', function(testDone) {
       runWithinFiber(function() {
         var shell = new Shell(CONTEXT);
@@ -128,12 +146,13 @@ describe('transport/shell', function() {
       });
     });
 
-    it('should throw when a command fails', function(testDone) {
+    it('should throw and stop when a command fails', function(testDone) {
       runWithinFiber(function() {
         var shell = new Shell(CONTEXT);
 
         expect(function() {
           shell._exec('invalid-command');
+          shell._exec('never-called');
         }).to.throw(errors.CommandExitedAbnormallyError, 'exited abnormally');
 
         expect(LOGGER_STUB.command.calledOnce).to.be.true;
