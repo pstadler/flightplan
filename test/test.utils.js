@@ -37,7 +37,6 @@ describe('utils', function() {
     });
   });
 
-
   describe('#escapeSingleQuotes()', function() {
     it('should correctly escape single quotes', function() {
       var escapeSingleQuotes = proxyquire('../lib/utils', {}).escapeSingleQuotes;
