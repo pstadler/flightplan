@@ -3,6 +3,7 @@ var expect = require('chai').expect
   , proxyquire = require('proxyquire')
   , fixtures = require('./fixtures')
   , runWithinFiber = require('./utils/run-within-fiber')
+  , errors = require('../lib/errors')
   , COMMANDS = require('../lib/transport/commands');
 
 describe('transport', function() {
@@ -23,7 +24,8 @@ describe('transport', function() {
 
   beforeEach(function() {
     MOCKS = {
-      '../logger': sinon.stub().returns(LOGGER_STUB)
+      '../logger': sinon.stub().returns(LOGGER_STUB),
+      'prompt': { get: sinon.stub() }
     };
 
     var Transport = proxyquire('../lib/transport', MOCKS);
@@ -130,10 +132,101 @@ describe('transport', function() {
   });
 
   describe('#prompt()', function() {
+    it('should display a message and wait for an answer', function(testDone) {
+      runWithinFiber(function() {
+        setImmediate(function() {
+          MOCKS.prompt.get.lastCall.args[1](null, { input: 'answer' });
+        });
+
+        var answer = transport.prompt('question?');
+
+        expect(MOCKS.prompt.get.calledOnce).to.be.true;
+        expect(MOCKS.prompt.get.lastCall.args[0]).to.have.property('hidden', false);
+        expect(MOCKS.prompt.get.lastCall.args[0]).to.have.property('required', false);
+        expect(MOCKS.prompt.get.lastCall.args[0].description).to.contain('question?');
+        expect(answer).to.equal('answer');
+
+        testDone();
+      });
+    });
+
+    it('should handle simultaneous prompts', function(testDone) {
+      runWithinFiber(function() {
+        var answer1, answer2;
+
+        setImmediate(function() {
+          runWithinFiber(function() {
+            setImmediate(function() {
+              MOCKS.prompt.get.secondCall.args[1](null, { input: 'answer2' });
+
+              expect(MOCKS.prompt.get.calledTwice).to.be.true;
+              expect(MOCKS.prompt.get.firstCall.args[0].description).to.contain('question1?');
+              expect(MOCKS.prompt.get.secondCall.args[0].description).to.contain('question2?');
+              expect(answer1).to.equal('answer1');
+              expect(answer2).to.equal('answer2');
+            });
+
+            answer2 = transport.prompt('question2?');
+
+            expect(MOCKS.prompt.get.notCalled).to.be.true;
+          });
+
+          MOCKS.prompt.get.firstCall.args[1](null, { input: 'answer1' });
+        });
+
+        answer1 = transport.prompt('question1?');
+
+        testDone();
+      });
+    });
+
+    it('should handle the `hidden` flag', function(testDone) {
+      runWithinFiber(function() {
+        setImmediate(function() {
+          MOCKS.prompt.get.lastCall.args[1](null, { input: 'answer' });
+        });
+
+        var answer = transport.prompt('question?', { hidden: true });
+
+        expect(MOCKS.prompt.get.lastCall.args[0]).to.have.property('hidden', true);
+        expect(answer).to.equal('answer');
+
+        testDone();
+      });
+    });
+
+    it('should take empty answers', function(testDone) {
+      runWithinFiber(function() {
+        setImmediate(function() {
+          MOCKS.prompt.get.lastCall.args[1](null, null);
+        });
+
+        var answer = transport.prompt('question?');
+
+        expect(answer).to.be.null;
+
+        testDone();
+      });
+    });
+
+    it('should throw on interrupt', function(testDone) {
+      runWithinFiber(function() {
+        setImmediate(function() {
+          expect(function() {
+            MOCKS.prompt.get.lastCall.args[1](new Error('ctrl-c'));
+          }).to.throw(errors.ProcessInterruptedError, 'canceled prompt');
+
+
+          testDone();
+        });
+
+        transport.prompt('question?');
+      });
+    });
   });
 
   describe('#waitFor()', function() {
-    it('should wait until done', function() {
+    it('should wait until done', function(testDone) {
       var RESULT = { result: 'test' };
 
       runWithinFiber(function() {
@@ -143,13 +236,15 @@ describe('transport', function() {
           });
         });
 
-        expect(result).to.deep.equal({ result: 'test' });
+        expect(result).to.deep.equal(RESULT);
+
+        testDone();
       });
     });
   });
 
   describe('#with()', function() {
-    it('should handle commands', function() {
+    it('should correctly handle commands', function() {
       transport._exec = sinon.stub();
 
       transport.with('outer-cmd', function() {
@@ -170,7 +265,7 @@ describe('transport', function() {
       ]);
     });
 
-    it('should handle command nesting', function() {
+    it('should correctly handle command nesting', function() {
       transport._exec = sinon.stub();
 
       transport.with('outer-cmd', function() {
@@ -187,7 +282,7 @@ describe('transport', function() {
 
     });
 
-    it('should handle options', function() {
+    it('should correctly handle options', function() {
       transport._exec = sinon.stub();
 
       transport.with({ outerOption1: true }, function() {
@@ -204,7 +299,7 @@ describe('transport', function() {
       expect(transport._options.outerOption1).to.be.undefined;
     });
 
-    it('should handle options nesting', function() {
+    it('should correctly handle options nesting', function() {
       transport._exec = sinon.stub();
 
       transport.with({ outerOption1: true, outerOption2: true }, function() {
