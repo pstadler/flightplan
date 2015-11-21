@@ -23,10 +23,14 @@ var COMMAND_OPTIONS = {
   failsafe: true
 };
 
+var LOG_METHODS = ['user', 'info', 'success', 'warn', 'error', 'command',
+                    'stdout', 'stdwarn', 'stderr', 'debug'];
+
 module.exports = {
   HOST: HOST,
   HOSTS: HOSTS,
   DYNAMIC_HOST: DYNAMIC_HOST,
   HOST_OPTIONS: HOST_OPTIONS,
-  COMMAND_OPTIONS: COMMAND_OPTIONS
+  COMMAND_OPTIONS: COMMAND_OPTIONS,
+  LOG_METHODS: LOG_METHODS
 };

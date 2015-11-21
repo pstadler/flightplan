@@ -1,11 +1,10 @@
 var expect = require('chai').expect
   , sinon = require('sinon')
-  , logger = require('../lib/logger');
+  , chalk = require('chalk')
+  , logger = require('../lib/logger')
+  , LOG_METHODS = require('./fixtures').LOG_METHODS;
 
 describe('logger', function() {
-
-  var LOG_METHODS = ['user', 'info', 'success', 'warn', 'error',
-                      'command', 'stdout', 'stdwarn', 'stderr', 'debug'];
 
   it('should print prefix when set', function() {
     var _logger = logger({ prefix: 'test-prefix' });
@@ -42,6 +41,8 @@ describe('logger', function() {
   it('should expose functional methods', function() {
     var _logger = logger({ prefix: 'test-prefix', debug: true });
 
+    expect(LOG_METHODS).to.have.length(10);
+
     LOG_METHODS.forEach(function(method) {
       var STDOUT_STUB = sinon.stub(process.stdout, 'write');
 
@@ -55,14 +56,16 @@ describe('logger', function() {
     });
   });
 
-  it('displays a list of available log types and their styles at this place', function() {
-    require('chalk').enabled = true; // eslint-disable-line global-require
+});
 
-    var _logger = logger({ debug: true, prefix: 'prefix' });
+after(function() {
+  chalk.enabled = true;
+  var _logger = logger({ debug: true, prefix: 'prefix' });
 
-    LOG_METHODS.forEach(function(method) {
-      _logger[method]('#' + method + '()');
-    });
+  process.stdout.write('Logger method styles\n\n');
+
+  LOG_METHODS.forEach(function(method) {
+    process.stdout.write(method + '\t\t');
+    _logger[method](method + '     \t██');
   });
-
 });
