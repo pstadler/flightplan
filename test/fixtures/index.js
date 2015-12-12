@@ -1,13 +1,16 @@
 var HOST = {
-  host: 'example.com'
+  host: 'example.com',
+  port: 22
 };
 
 var HOSTS = [
   {
-    host: 'example.com'
+    host: 'example.com',
+    port: 22
   },
   {
-    host: 'example.org'
+    host: 'example.org',
+    port: 22022
   }
 ];
 
