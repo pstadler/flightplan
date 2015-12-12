@@ -292,7 +292,10 @@ describe('flightplan', function() {
       expect(contextArg.options.username).to.equal('testuser');
       expect(contextArg.options['some-flag']).to.be.true;
       expect(contextArg.options['another-flag']).to.be.false;
-      expect(contextArg.hosts[0]).to.deep.equal({ host: 'example.com', username: 'testuser' });
+      expect(contextArg.hosts[0]).to.deep.equal({
+        host: 'example.com',
+        port: 22, username: 'testuser'
+      });
     });
 
     it('should handle dynamic hosts configuration', function() {
@@ -303,7 +306,7 @@ describe('flightplan', function() {
       plan.run('task', 'target');
 
       var contextArg = FLIGHT_STUB.run.lastCall.args[2];
-      expect(contextArg.hosts[0]).to.deep.equal({ host: 'example.com' });
+      expect(contextArg.hosts[0]).to.deep.equal(fixtures.HOST);
     });
 
     it('should handle errors in dynamic hosts configuration', function() {

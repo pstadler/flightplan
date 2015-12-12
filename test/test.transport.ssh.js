@@ -4,7 +4,8 @@ var expect = require('chai').expect
   , runWithinFiber = require('./utils/run-within-fiber')
   , sshEvent = require('./utils/ssh-event')
   , fixtures = require('./fixtures')
-  , errors = require('../lib/errors');
+  , errors = require('../lib/errors')
+  , path = require('path');
 
 describe('transport/ssh', function() {
 
@@ -43,9 +44,6 @@ describe('transport/ssh', function() {
           stream.on(event, fn);
         }
       };
-    },
-    'fs': {
-      readFileSync: sinon.stub()
     }
   };
 
@@ -124,15 +122,13 @@ describe('transport/ssh', function() {
         new SSH({
           options: {},
           remote: {
-            privateKey: '/path/to/file'
+            privateKey: path.resolve(__dirname, 'fixtures', 'private-key.txt')
           }
         });
 
-        expect(MOCKS.fs.readFileSync.calledOnce).to.be.true;
-        expect(MOCKS.fs.readFileSync.lastCall.args).to.deep.equal([
-          '/path/to/file',
-          { encoding: 'utf8' }
-        ]);
+        expect(SSH2_CONNECT_STUB.calledOnce).to.be.true;
+        expect(SSH2_CONNECT_STUB.lastCall.args[0])
+          .to.have.property('privateKey', 'private key fixture\n');
 
         testDone();
       });
