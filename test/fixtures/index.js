@@ -1,3 +1,5 @@
+var path = require('path');
+
 var HOST = {
   host: 'example.com',
   port: 22
@@ -40,6 +42,8 @@ var INTERACTIVE_PROMPTS = [
   }
 ];
 
+var PRIVATE_KEY_PATH = path.resolve(__dirname, 'private-key.txt');
+
 module.exports = {
   HOST: HOST,
   HOSTS: HOSTS,
@@ -47,5 +51,6 @@ module.exports = {
   HOST_OPTIONS: HOST_OPTIONS,
   COMMAND_OPTIONS: COMMAND_OPTIONS,
   LOG_METHODS: LOG_METHODS,
-  INTERACTIVE_PROMPTS: INTERACTIVE_PROMPTS
+  INTERACTIVE_PROMPTS: INTERACTIVE_PROMPTS,
+  PRIVATE_KEY_PATH: PRIVATE_KEY_PATH
 };

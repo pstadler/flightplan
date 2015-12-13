@@ -4,8 +4,7 @@ var expect = require('chai').expect
   , runWithinFiber = require('./utils/run-within-fiber')
   , sshEvent = require('./utils/ssh-event')
   , fixtures = require('./fixtures')
-  , errors = require('../lib/errors')
-  , path = require('path');
+  , errors = require('../lib/errors');
 
 describe('transport/ssh', function() {
 
@@ -122,7 +121,7 @@ describe('transport/ssh', function() {
         new SSH({
           options: {},
           remote: {
-            privateKey: path.resolve(__dirname, 'fixtures', 'private-key.txt')
+            privateKey: fixtures.PRIVATE_KEY_PATH
           }
         });
 

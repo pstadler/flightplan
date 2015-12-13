@@ -3,7 +3,9 @@ var expect = require('chai').expect
   , sinon = require('sinon')
   , runWithinFiber = require('./utils/run-within-fiber')
   , childProcess = require('child_process')
-  , errors = require('../lib/errors');
+  , errors = require('../lib/errors')
+  , fixtures = require('./fixtures')
+  , extend = require('util')._extend;
 
 describe('transport/shell', function() {
 
@@ -18,6 +20,7 @@ describe('transport/shell', function() {
   };
 
   var CHILD_PROCESS_SPY = sinon.spy(childProcess, 'exec');
+  var WRITE_TEMP_FILE_STUB = sinon.stub().returns('/path/to/tmp/file');
 
   var Transport = proxyquire('../lib/transport', {
     '../logger': function() { return LOGGER_STUB; },
@@ -25,11 +28,15 @@ describe('transport/shell', function() {
   });
 
   var MOCKS = {
-    './index': Transport
+    './index': Transport,
+    '../utils': {
+      writeTempFile: WRITE_TEMP_FILE_STUB
+    }
   };
 
   var CONTEXT = {
-    options: { debug: true },
+    options: {},
+    hosts: fixtures.HOSTS,
     remote: { host: 'localhost' }
   };
 
@@ -45,6 +52,7 @@ describe('transport/shell', function() {
     });
 
     CHILD_PROCESS_SPY.reset();
+    WRITE_TEMP_FILE_STUB.reset();
   });
 
   describe('initialize', function() {
@@ -193,6 +201,226 @@ describe('transport/shell', function() {
         testDone();
       });
     });
+  });
+
+  describe('#transfer()', function() {
+    var EXEC_STUB;
+
+    beforeEach(function() {
+      EXEC_STUB = sinon.stub(Shell.prototype, '_exec').returns('test');
+    });
+
+    afterEach(function() {
+      EXEC_STUB.restore();
+    });
+
+    it('should upload a single file', function(testDone) {
+      runWithinFiber(function() {
+
+        var shell = new Shell(CONTEXT);
+
+        shell.transfer('/path/to/file', '/remote/path');
+
+        expect(WRITE_TEMP_FILE_STUB.calledOnce).to.be.true;
+        expect(WRITE_TEMP_FILE_STUB.lastCall.args[0]).to.contain('/path/to/file');
+        expect(EXEC_STUB.lastCall.args[0]).to.contain('--files-from /path/to/tmp/file');
+
+        testDone();
+      });
+    });
+
+    it('should upload an array of files', function(testDone) {
+      runWithinFiber(function() {
+
+        var shell = new Shell(CONTEXT);
+
+        shell.transfer(['/path/to/file', '/path/to/another/file'], '/remote/path');
+
+        expect(WRITE_TEMP_FILE_STUB.calledOnce).to.be.true;
+        expect(WRITE_TEMP_FILE_STUB.lastCall.args[0]).to.contain('/path/to/file');
+        expect(WRITE_TEMP_FILE_STUB.lastCall.args[0]).to.contain('/path/to/another/file');
+        expect(EXEC_STUB.lastCall.args[0]).to.contain('--files-from /path/to/tmp/file');
+
+        testDone();
+      });
+    });
+
+    it('should upload an array of files', function(testDone) {
+      runWithinFiber(function() {
+
+        var shell = new Shell(CONTEXT);
+
+        shell.transfer(['/path/to/file', '/path/to/another/file'], '/remote/path');
+
+        expect(WRITE_TEMP_FILE_STUB.calledOnce).to.be.true;
+        expect(WRITE_TEMP_FILE_STUB.lastCall.args[0])
+          .to.contain('/path/to/file\n/path/to/another/file');
+        expect(EXEC_STUB.lastCall.args[0]).to.contain('--files-from /path/to/tmp/file');
+
+        testDone();
+      });
+    });
+
+    it('should upload a zero-delimited list of files', function(testDone) {
+      runWithinFiber(function() {
+
+        var shell = new Shell(CONTEXT);
+
+        shell.transfer(['/path/to/file\0/path/to/another/file'], '/remote/path');
+
+        expect(WRITE_TEMP_FILE_STUB.calledOnce).to.be.true;
+        expect(WRITE_TEMP_FILE_STUB.lastCall.args[0])
+          .to.contain('/path/to/file\n/path/to/another/file');
+        expect(EXEC_STUB.lastCall.args[0]).to.contain('--files-from /path/to/tmp/file');
+
+        testDone();
+      });
+    });
+
+    it('should upload a newline-delimited list of files', function(testDone) {
+      runWithinFiber(function() {
+
+        var shell = new Shell(CONTEXT);
+
+        shell.transfer(['/path/to/file\n/path/to/another/file'], '/remote/path');
+
+        expect(WRITE_TEMP_FILE_STUB.calledOnce).to.be.true;
+        expect(WRITE_TEMP_FILE_STUB.lastCall.args[0])
+          .to.contain('/path/to/file\n/path/to/another/file');
+        expect(EXEC_STUB.lastCall.args[0]).to.contain('--files-from /path/to/tmp/file');
+
+        testDone();
+      });
+    });
+
+    it('should upload files from the result of a command', function(testDone) {
+      runWithinFiber(function() {
+
+        var shell = new Shell(CONTEXT);
+
+        shell.transfer({ stdout: '/path/to/file\n/path/to/another/file' }, '/remote/path');
+
+        expect(WRITE_TEMP_FILE_STUB.calledOnce).to.be.true;
+        expect(WRITE_TEMP_FILE_STUB.lastCall.args[0])
+          .to.contain('/path/to/file\n/path/to/another/file');
+        expect(EXEC_STUB.lastCall.args[0]).to.contain('--files-from /path/to/tmp/file');
+
+        testDone();
+      });
+    });
+
+    it('should throw when passing an empty file list', function(testDone) {
+      runWithinFiber(function() {
+
+        var shell = new Shell(CONTEXT);
+
+        expect(function() {
+          shell.transfer('\n', '/remote/path');
+        }).to.throw(errors.InvalidArgumentError, 'Empty file list');
+
+        expect(function() {
+          shell.transfer([], '/remote/path');
+        }).to.throw(errors.InvalidArgumentError, 'Empty file list');
+
+        expect(function() {
+          shell.transfer({}, '/remote/path');
+        }).to.throw(errors.InvalidArgumentError, 'Invalid object');
+
+        testDone();
+      });
+    });
+
+    it('should throw when remote path is empty', function(testDone) {
+      runWithinFiber(function() {
+
+        var shell = new Shell(CONTEXT);
+
+        expect(function() {
+          shell.transfer('/path/to/file');
+        }).to.throw(errors.InvalidArgumentError, 'Missing remote path');
+
+        testDone();
+      });
+    });
+
+    it('should call rsync with the correct flags', function(testDone) {
+      runWithinFiber(function() {
+
+        var shell = new Shell(CONTEXT);
+
+        shell.transfer('/path/to/file', '/remote/path');
+
+        expect(EXEC_STUB.calledTwice).to.be.true;
+        expect(EXEC_STUB.firstCall.args[0]).to.contain(' -az ');
+
+        var CONTEXT_WITH_DEBUG = extend(CONTEXT, { options: { debug: true }});
+        shell = new Shell(CONTEXT_WITH_DEBUG);
+
+        shell.transfer('/path/to/file', '/remote/path');
+
+        expect(EXEC_STUB.lastCall.args[0]).to.contain(' -azvv ');
+
+        testDone();
+      });
+    });
+
+    it('should handle the username option', function(testDone) {
+      runWithinFiber(function() {
+
+        var CONTEXT_WITH_USERNAME = {
+          options: {},
+          remote: { host: 'localhost' },
+          hosts: [{
+            host: 'example.org',
+            username: 'remote-user'
+          }]
+        };
+        var shell = new Shell(CONTEXT_WITH_USERNAME);
+
+        shell.transfer('/path/to/file', '/remote/path');
+
+        expect(EXEC_STUB.lastCall.args[0]).to.contain(' remote-user@example.org:');
+
+        testDone();
+      });
+    });
+
+    it('should use the path to a private key', function(testDone) {
+      runWithinFiber(function() {
+
+        var CONTEXT_WITH_PRIVATE_KEY = {
+          options: {},
+          remote: { host: 'localhost' },
+          hosts: [{
+            host: 'example.org',
+            privateKey: fixtures.PRIVATE_KEY_PATH
+          }]
+        };
+        var shell = new Shell(CONTEXT_WITH_PRIVATE_KEY);
+
+        shell.transfer('/path/to/file', '/remote/path');
+
+        expect(EXEC_STUB.lastCall.args[0]).to.contain('-i ' + fixtures.PRIVATE_KEY_PATH);
+
+        testDone();
+      });
+    });
+
+    it('should upload files to multiple remote hosts', function(testDone) {
+      runWithinFiber(function() {
+
+        var shell = new Shell(CONTEXT);
+
+        shell.transfer('/path/to/file', '/remote/path');
+
+        expect(EXEC_STUB.calledTwice).to.be.true;
+        expect(EXEC_STUB.firstCall.args[0]).to.match(/-p22.*\.\/.*example\.com:\/remote\/path/);
+        expect(EXEC_STUB.secondCall.args[0]).to.match(/-p22022.*\.\/.*example\.org:\/remote\/path/);
+
+        testDone();
+      });
+    });
+
   });
 
 });
