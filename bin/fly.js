@@ -25,7 +25,7 @@ var shortHands = {
   't': ['--targets'],
   'T': ['--tasks'],
   'v': ['--version'],
-  'h': ['--help'],
+  'h': ['--help']
 };
 
 var options = nopt(knownOptions, shortHands, process.argv, 2);
@@ -53,7 +53,7 @@ if(options.version) {
   process.exit(1);
 }
 
-var task = 'default';
+var task;
 var target = options.argv.remain.length ? options.argv.remain[0] : null;
 
 if(target && target.indexOf(':') !== -1) {
@@ -76,6 +76,7 @@ cli.on('requireFail', function(name) {
 });
 
 var invoke = function(env) {
+
   if(!env.configPath) {
     process.stderr.write(format('Error: %s not found\n', (options.flightplan || 'flightplan.js')));
     process.exit(1);

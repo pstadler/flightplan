@@ -1,4 +1,7 @@
-# Flightplan ✈ [![NPM version][npm-version-image]][npm-url] [![NPM downloads][npm-downloads-image]][npm-url] [![Dependency Status][dependencies-image]][dependencies-url] [![MIT License][license-image]][license-url]
+# Flightplan
+
+[![NPM version][npm-version-image]][npm-url] [![Build Status][build-status-image]][build-status-url]
+[![Build Status][coverage-image]][coverage-url] [![NPM downloads][npm-downloads-image]][npm-url] [![Dependency Status][dependencies-image]][dependencies-url]
 
 Run sequences of shell commands against local and remote hosts.
 
@@ -673,5 +676,8 @@ transport.debug('Copying files to remote hosts');
 [dependencies-url]: https://david-dm.org/pstadler/flightplan
 [dependencies-image]: https://david-dm.org/pstadler/flightplan.svg?style=flat-square
 
-[license-url]: https://github.com/pstadler/flightplan/blob/master/LICENSE
-[license-image]: https://img.shields.io/npm/l/flightplan.svg?style=flat-square
+[build-status-url]: https://travis-ci.org/pstadler/flightplan
+[build-status-image]: https://img.shields.io/travis/pstadler/flightplan/master.svg?style=flat-square
+
+[coverage-url]: https://coveralls.io/github/pstadler/flightplan?branch=master
+[coverage-image]: https://img.shields.io/coveralls/pstadler/flightplan/master.svg?style=flat-square
