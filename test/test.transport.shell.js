@@ -31,6 +31,9 @@ describe('transport/shell', function() {
     './index': Transport,
     '../utils': {
       writeTempFile: WRITE_TEMP_FILE_STUB
+    },
+    'fs': {
+      unlink: function() {}
     }
   };
 
@@ -364,7 +367,7 @@ describe('transport/shell', function() {
       });
     });
 
-    it('should handle the username option', function(testDone) {
+    it('should use the `username` property of the remote if specified', function(testDone) {
       runWithinFiber(function() {
 
         var CONTEXT_WITH_USERNAME = {
