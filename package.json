@@ -47,7 +47,7 @@
     "byline": "^4.1.1",
     "chalk": "^1.1.1",
     "fibers": "^1.0.7",
-    "interpret": "^0.6.2",
+    "interpret": "^1.0.0",
     "liftoff": "^2.2.0",
     "nopt": "^3.0.4",
     "pretty-hrtime": "^1.0.1",
