@@ -73,8 +73,8 @@ describe('fly', function() {
     });
 
     it('should fail when <module>/register is not available', function() {
-      expect(exec('--flightplan=test/fixtures/empty.coffee').stderr)
-        .to.contain('Unable to load module "coffee-script/register"');
+      expect(exec('--flightplan=test/fixtures/empty.ts').stderr)
+        .to.match(/Unable to load module ".*\/register"/);
     });
   });
 
