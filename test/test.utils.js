@@ -45,6 +45,19 @@ describe('utils', function() {
       expect(escapeSingleQuotes('"string"')).to.equal('"string"');
       expect(escapeSingleQuotes("\\'string\\'")).to.equal("\\'\\''string\\'\\''");
       expect(escapeSingleQuotes('')).to.equal('');
+      expect(escapeSingleQuotes()).to.be.undefined;
+    });
+  });
+
+  describe('#escapeSpaces()', function() {
+    it('should correctly escape single quotes', function() {
+      var escapeSpaces = proxyquire('../lib/utils', {}).escapeSpaces;
+
+      expect(escapeSpaces('str str')).to.equal('str\\ str');
+      expect(escapeSpaces(' str  ')).to.equal('\\ str\\ \\ ');
+      expect(escapeSpaces('str  str')).to.equal('str\\ \\ str');
+      expect(escapeSpaces('')).to.equal('');
+      expect(escapeSpaces()).to.be.undefined;
     });
   });
 
