@@ -5,7 +5,7 @@
 
 Run sequences of shell commands against local and remote hosts.
 
-Flightplan is a [node.js](http://nodejs.org) library for streamlining application deployment or systems administration tasks, similar to Python's [Fabric](http://fabfile.org).
+Flightplan is a [node.js](http://nodejs.org) library for streamlining application deployment or systems administration tasks.
 
 A complete list of changes can be found in the [Changelog](https://github.com/pstadler/flightplan/releases). Support is available on [Gitter](https://gitter.im/pstadler/flightplan).
 
