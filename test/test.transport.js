@@ -112,10 +112,6 @@ describe('transport', function() {
       transport.sudo("'cmd'");
 
       expect(transport._exec.lastCall.args[0]).to.equal("sudo -u root -i bash -c ''\\''cmd'\\'''");
-
-      transport.sudo(' a  b c ');
-
-      expect(transport._exec.lastCall.args[0]).to.contain('\\ a\\ \\ b\\ c\\ ');
     });
 
     it('should pass options to #_exec()', function() {
