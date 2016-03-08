@@ -37,14 +37,15 @@ describe('utils', function() {
     });
   });
 
-  describe('#escapeSingleQuotes()', function() {
+  describe('#escapeQuotes()', function() {
     it('should correctly escape single quotes', function() {
-      var escapeSingleQuotes = proxyquire('../lib/utils', {}).escapeSingleQuotes;
+      var escapeQuotes = proxyquire('../lib/utils', {}).escapeQuotes;
 
-      expect(escapeSingleQuotes("'string'")).to.equal("'\\''string'\\''");
-      expect(escapeSingleQuotes('"string"')).to.equal('"string"');
-      expect(escapeSingleQuotes("\\'string\\'")).to.equal("\\'\\''string\\'\\''");
-      expect(escapeSingleQuotes('')).to.equal('');
+      expect(escapeQuotes("'string'")).to.equal("'\\''string'\\''");
+      expect(escapeQuotes('"string"')).to.equal('\\"string\\"');
+      expect(escapeQuotes("\\'string\\'")).to.equal("\\'\\''string\\'\\''");
+      expect(escapeQuotes('')).to.equal('');
+      expect(escapeQuotes()).to.be.undefined;
     });
   });
 
