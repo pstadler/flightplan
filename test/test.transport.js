@@ -97,7 +97,7 @@ describe('transport', function() {
 
       expect(transport._exec.calledOnce).to.be.true;
       expect(transport._exec.lastCall.args).to.deep.equal([
-        "sudo -u root -i bash -c \"''\"",
+        "echo '' | sudo -u root -i bash",
         {}
       ]);
     });
@@ -108,12 +108,12 @@ describe('transport', function() {
       transport.sudo('printf "hello world"');
 
       expect(transport._exec.lastCall.args[0])
-        .to.equal("sudo -u root -i bash -c \"\'printf \\\"hello world\\\"\'\"");
+        .to.equal("echo 'printf \"hello world\"' | sudo -u root -i bash");
 
       transport.sudo("printf 'hello world'");
 
       expect(transport._exec.lastCall.args[0])
-        .to.equal("sudo -u root -i bash -c \"'printf '\\''hello world'\\'''\"");
+        .to.equal("echo 'printf '\\''hello world'\\''' | sudo -u root -i bash");
     });
 
     it('should pass options to #_exec()', function() {
@@ -129,7 +129,7 @@ describe('transport', function() {
 
       transport.sudo('cmd', { user: 'not-root' });
 
-      expect(transport._exec.lastCall.args[0]).to.equal("sudo -u not-root -i bash -c \"'cmd'\"");
+      expect(transport._exec.lastCall.args[0]).to.equal("echo 'cmd' | sudo -u not-root -i bash");
     });
   });
 
