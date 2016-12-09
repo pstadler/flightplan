@@ -204,7 +204,7 @@ plan.target('production', [
 ]);
 
 // run with `fly dynamic-hosts`
-plan.target('dynamic-hosts', function(done) {
+plan.target('dynamic-hosts', function(done, runtime) {
   var AWS = require('aws-sdk');
   AWS.config.update({accessKeyId: '...', secretAccessKey: '...'});
   var ec2 = new AWS.EC2();
@@ -268,7 +268,7 @@ multiple hosts. Passing an `Error` object will immediately abort the current
 flightplan.
 
 ```javascript
-plan.target('dynamic-hosts', function(done) {
+plan.target('dynamic-hosts', function(done, runtime) {
   var AWS = require('aws-sdk');
   AWS.config.update({accessKeyId: '...', secretAccessKey: '...'});
   var ec2 = new AWS.EC2();
