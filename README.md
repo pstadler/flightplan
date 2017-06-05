@@ -505,7 +505,9 @@ Copy a list of files to the current target's remote host(s) using
 flights.
 
 ```javascript
-var files = ['path/to/file1', 'path/to/file2'];
+var path = require('path');
+
+var files = [path.join(__dirname, '../path/to/file1'), '/path/to/file2'];
 local.transfer(files, '/tmp/foo');
 ```
 

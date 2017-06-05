@@ -226,7 +226,8 @@ describe('transport/shell', function() {
 
         expect(WRITE_TEMP_FILE_STUB.calledOnce).to.be.true;
         expect(WRITE_TEMP_FILE_STUB.lastCall.args[0]).to.contain('/path/to/file');
-        expect(EXEC_STUB.lastCall.args[0]).to.contain('--files-from /path/to/tmp/file');
+        expect(EXEC_STUB.lastCall.args[0]).to.contain(':/remote/path');
+        expect(EXEC_STUB.lastCall.args[0]).to.match(/cat\s+\/path\/to\/tmp\/file/);
 
         testDone();
       });
@@ -242,23 +243,9 @@ describe('transport/shell', function() {
         expect(WRITE_TEMP_FILE_STUB.calledOnce).to.be.true;
         expect(WRITE_TEMP_FILE_STUB.lastCall.args[0]).to.contain('/path/to/file');
         expect(WRITE_TEMP_FILE_STUB.lastCall.args[0]).to.contain('/path/to/another/file');
-        expect(EXEC_STUB.lastCall.args[0]).to.contain('--files-from /path/to/tmp/file');
-
-        testDone();
-      });
-    });
-
-    it('should upload an array of files', function(testDone) {
-      runWithinFiber(function() {
-
-        var shell = new Shell(CONTEXT);
-
-        shell.transfer(['/path/to/file', '/path/to/another/file'], '/remote/path');
-
-        expect(WRITE_TEMP_FILE_STUB.calledOnce).to.be.true;
         expect(WRITE_TEMP_FILE_STUB.lastCall.args[0])
-          .to.contain('/path/to/file\n/path/to/another/file');
-        expect(EXEC_STUB.lastCall.args[0]).to.contain('--files-from /path/to/tmp/file');
+            .to.contain('/path/to/file\n/path/to/another/file');
+        expect(EXEC_STUB.lastCall.args[0]).to.match(/cat\s+\/path\/to\/tmp\/file/);
 
         testDone();
       });
@@ -274,7 +261,7 @@ describe('transport/shell', function() {
         expect(WRITE_TEMP_FILE_STUB.calledOnce).to.be.true;
         expect(WRITE_TEMP_FILE_STUB.lastCall.args[0])
           .to.contain('/path/to/file\n/path/to/another/file');
-        expect(EXEC_STUB.lastCall.args[0]).to.contain('--files-from /path/to/tmp/file');
+        expect(EXEC_STUB.lastCall.args[0]).to.match(/cat\s+\/path\/to\/tmp\/file/);
 
         testDone();
       });
@@ -290,7 +277,7 @@ describe('transport/shell', function() {
         expect(WRITE_TEMP_FILE_STUB.calledOnce).to.be.true;
         expect(WRITE_TEMP_FILE_STUB.lastCall.args[0])
           .to.contain('/path/to/file\n/path/to/another/file');
-        expect(EXEC_STUB.lastCall.args[0]).to.contain('--files-from /path/to/tmp/file');
+        expect(EXEC_STUB.lastCall.args[0]).to.match(/cat\s+\/path\/to\/tmp\/file/);
 
         testDone();
       });
@@ -306,7 +293,7 @@ describe('transport/shell', function() {
         expect(WRITE_TEMP_FILE_STUB.calledOnce).to.be.true;
         expect(WRITE_TEMP_FILE_STUB.lastCall.args[0])
           .to.contain('/path/to/file\n/path/to/another/file');
-        expect(EXEC_STUB.lastCall.args[0]).to.contain('--files-from /path/to/tmp/file');
+        expect(EXEC_STUB.lastCall.args[0]).to.match(/cat\s+\/path\/to\/tmp\/file/);
 
         testDone();
       });
@@ -417,8 +404,8 @@ describe('transport/shell', function() {
         shell.transfer('/path/to/file', '/remote/path');
 
         expect(EXEC_STUB.calledTwice).to.be.true;
-        expect(EXEC_STUB.firstCall.args[0]).to.match(/-p22.*\.\/.*example\.com:\/remote\/path/);
-        expect(EXEC_STUB.secondCall.args[0]).to.match(/-p22022.*\.\/.*example\.org:\/remote\/path/);
+        expect(EXEC_STUB.firstCall.args[0]).to.match(/-p22"(\s+%\s+)example\.com:\/remote\/path/);
+        expect(EXEC_STUB.secondCall.args[0]).to.match(/-p22022"(\s+%\s+)example\.org:\/remote\/path/);
 
         testDone();
       });
