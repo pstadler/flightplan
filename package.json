@@ -46,7 +46,7 @@
   "dependencies": {
     "byline": "^4.2.1",
     "chalk": "^1.1.1",
-    "fibers": "^1.0.10",
+    "fibers": "1.0.15",
     "interpret": "^1.0.0",
     "liftoff": "^2.2.0",
     "nopt": "^3.0.4",
