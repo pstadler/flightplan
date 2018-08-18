@@ -33,7 +33,7 @@ describe('transport/shell', function() {
       writeTempFile: WRITE_TEMP_FILE_STUB
     },
     'fs': {
-      unlink: function() {}
+      unlinkSync: function() {}
     }
   };
 
