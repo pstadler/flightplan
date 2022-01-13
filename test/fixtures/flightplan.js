@@ -1,9 +1,9 @@
 var plan = require('../../index');
 
 plan.target('test', {
-  host: 'example.com'
+  host: 'example.com',
 });
 
-plan.local(function() {
+plan.local(function () {
   /* noop */
 });

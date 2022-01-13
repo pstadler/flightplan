@@ -20,6 +20,9 @@
     "cloud",
     "fabric"
   ],
+  "engines": {
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+  },
   "readmeFilename": "README.md",
   "homepage": "https://github.com/pstadler/flightplan",
   "repository": {
@@ -34,39 +37,40 @@
   },
   "scripts": {
     "docs": "cd ./docs; node generate.js",
-    "test": "./node_modules/.bin/mocha",
-    "lint": "./node_modules/.bin/eslint .",
-    "coverage": "rm -rf ./coverage; ./node_modules/.bin/istanbul cover --dir coverage/lib ./node_modules/.bin/_mocha -- -R spec; ./node_modules/.bin/istanbul report",
-    "coverage-lcov": "rm -rf ./coverage; ./node_modules/.bin/istanbul cover --dir coverage/lib --report lcovonly ./node_modules/.bin/_mocha -- -R spec; ./node_modules/.bin/istanbul report lcovonly",
-    "coveralls": "npm run coverage-lcov && cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
+    "test": "mocha",
+    "lint": "eslint .",
+    "coverage": "nyc mocha",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "pre-commit": [
     "lint"
   ],
   "dependencies": {
-    "byline": "^4.2.1",
-    "chalk": "^1.1.1",
-    "fibers": "^4.0.1",
-    "interpret": "^1.0.0",
-    "liftoff": "^2.2.0",
-    "nopt": "^3.0.4",
-    "pretty-hrtime": "^1.0.1",
-    "prompt": "^0.2.14",
-    "semver": "^5.1.0",
-    "ssh2": "^0.4.15",
-    "util-extend": "^1.0.1",
-    "v8flags": "^2.0.10"
+    "byline": "^5.0.0",
+    "chalk": "^4.1.2",
+    "interpret": "^2.2.0",
+    "liftoff": "^4.0.0",
+    "nopt": "^5.0.0",
+    "pretty-hrtime": "^1.0.3",
+    "prompt": "^1.2.0",
+    "semver": "^7.3.5",
+    "ssh2": "^1.5.0",
+    "util-extend": "^1.0.3",
+    "v8flags": "^4.0.0"
   },
   "license": "MIT",
   "devDependencies": {
-    "chai": "^3.3.0",
-    "coveralls": "^2.11.4",
-    "eslint": "^1.10.3",
-    "istanbul": "^0.4.0",
+    "chai": "^4.3.4",
+    "chai-as-promised": "^7.1.1",
+    "coveralls": "^3.1.1",
+    "eslint": "^8.6.0",
+    "eslint-config-prettier": "^8.3.0",
     "markdox": "^0.1.10",
-    "mocha": "^2.3.3",
-    "pre-commit": "^1.1.1",
-    "proxyquire": "^1.7.3",
-    "sinon": "^1.17.2"
+    "mocha": "^9.1.3",
+    "mocha-lcov-reporter": "^1.3.0",
+    "nyc": "^15.1.0",
+    "pre-commit": "^1.2.2",
+    "proxyquire": "^2.1.3",
+    "sinon": "^12.0.1"
   }
 }

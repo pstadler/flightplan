@@ -1,6 +1,14 @@
 env:
   node: true
   mocha: true
+  es2020: true
+
+extends:
+  - prettier
+
+parserOptions:
+  ecmaVersion: 2020
+  sourceType: module
 
 rules:
   no-undef: 2
@@ -20,7 +28,6 @@ rules:
   comma-spacing: 2
   consistent-this: [2, "self"]
   no-unneeded-ternary: 2
-  indent: [2, 2, { SwitchCase: 1 }]
   no-shadow: 2
   eqeqeq: 2
   curly: 2
@@ -31,4 +38,4 @@ rules:
   linebreak-style: 2
   new-cap: 2
   no-multiple-empty-lines: [2, { max: 2 }]
-  complexity: [2, 8]
+  complexity: [2, 12]

@@ -263,7 +263,7 @@ Instead of having a static hosts configuration for a target you can configure
 it on the fly by passing a function `fn(done)` as the second argument to
 `target()`.
 
-This function is executed at the very beginning. Whatever is passed to
+This function is exectued at the very beginning. Whatever is passed to
 `done()` will be used for connecting to remote hosts. This can either be an
 object or an array of objects depending on if you want to connect to one or
 multiple hosts. Passing an `Error` object will immediately abort the current
