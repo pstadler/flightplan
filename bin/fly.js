@@ -119,6 +119,13 @@ var invoke = function (env) {
     process.exit(1);
   }
 
+  process.on('unhandledRejection', (e) => {
+    process.stderr.write(`Unhandled Promise rejection ${e.name}: ${e.message}\n`);
+    process.stderr.write(e.stack);
+
+    process.exit(1);
+  });
+
   instance.run(task, target, options);
 };
 
