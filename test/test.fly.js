@@ -99,6 +99,7 @@ describe('fly', function () {
       };
 
       proxyquire('../bin/fly.js', MOCKS);
+
       // wait a cycle until invoke was called
       setImmediate(function () {
         expect(runSpy.calledOnce).to.be.true;

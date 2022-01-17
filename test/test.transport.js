@@ -213,27 +213,27 @@ describe('transport', function () {
   });
 
   describe('#with()', function () {
-    it('should correctly handle commands', function () {
+    it('should correctly handle commands', async function () {
       transport._exec = sinon.stub();
 
-      transport.with('outer-cmd', function () {
-        transport.exec('inner-cmd');
+      await transport.with('outer-cmd', async function () {
+        await transport.exec('inner-cmd');
 
         expect(transport._exec.calledOnce).to.be.true;
         expect(transport._exec.lastCall.args).to.deep.equal(['outer-cmd && inner-cmd', {}]);
       });
 
-      transport.exec('cmd');
+      await transport.exec('cmd');
 
       expect(transport._exec.lastCall.args).to.deep.equal(['cmd', {}]);
     });
 
-    it('should correctly handle command nesting', function () {
+    it('should correctly handle command nesting', async function () {
       transport._exec = sinon.stub();
 
-      transport.with('outer-cmd', function () {
-        transport.with('another-cmd', function () {
-          transport.exec('inner-cmd');
+      await transport.with('outer-cmd', async function () {
+        await transport.with('another-cmd', async function () {
+          await transport.exec('inner-cmd');
 
           expect(transport._exec.calledOnce).to.be.true;
           expect(transport._exec.lastCall.args).to.deep.equal([
@@ -244,11 +244,11 @@ describe('transport', function () {
       });
     });
 
-    it('should correctly handle options', function () {
+    it('should correctly handle options', async function () {
       transport._exec = sinon.stub();
 
-      transport.with({ outerOption1: true }, function () {
-        transport.exec('inner-cmd');
+      await transport.with({ outerOption1: true }, async function () {
+        await transport.exec('inner-cmd');
 
         expect(transport._options.outerOption1).to.be.true;
         expect(transport._exec.calledOnce).to.be.true;
@@ -258,11 +258,11 @@ describe('transport', function () {
       expect(transport._options.outerOption1).to.be.undefined;
     });
 
-    it('should correctly handle options nesting', function () {
+    it('should correctly handle options nesting', async function () {
       transport._exec = sinon.stub();
 
-      transport.with({ outerOption1: true, outerOption2: true }, function () {
-        transport.with({ outerOption1: false, innerOption1: true }, function () {
+      await transport.with({ outerOption1: true, outerOption2: true }, async function () {
+        await transport.with({ outerOption1: false, innerOption1: true }, async function () {
           expect(transport._options.outerOption1).to.be.false;
           expect(transport._options.outerOption2).to.be.true;
           expect(transport._options.innerOption1).to.be.true;
@@ -274,11 +274,11 @@ describe('transport', function () {
       expect(transport._options.outerOption1).to.be.undefined;
     });
 
-    it('should handle commands and options', function () {
+    it('should handle commands and options', async function () {
       transport._exec = sinon.stub();
 
-      transport.with('outer-cmd', { outerOption1: true }, function () {
-        transport.exec('inner-cmd');
+      await transport.with('outer-cmd', { outerOption1: true }, async function () {
+        await transport.exec('inner-cmd');
 
         expect(transport._options.outerOption1).to.be.true;
         expect(transport._exec.calledOnce).to.be.true;
