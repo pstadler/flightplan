@@ -78,6 +78,12 @@ describe('fly', function () {
   });
 
   describe('invocation', function () {
+    it('should stop and exit if there are unhandle rejections', function () {
+      expect(exec('-f test/fixtures/flightplan.reject.js test').stderr).to.match(
+        /Promise rejection/
+      );
+    });
+
     it('should pass arguments to flightplan', function (testDone) {
       var restoreProcessArgv = process.argv,
         runSpy = sinon.spy(),
