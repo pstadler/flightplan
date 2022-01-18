@@ -36,54 +36,59 @@ var plan = require('flightplan');
 plan.target('staging', {
   host: 'staging.example.com',
   username: 'pstadler',
-  agent: process.env.SSH_AUTH_SOCK
+  agent: process.env.SSH_AUTH_SOCK,
 });
 
 plan.target('production', [
   {
     host: 'www1.example.com',
     username: 'pstadler',
-    agent: process.env.SSH_AUTH_SOCK
+    agent: process.env.SSH_AUTH_SOCK,
   },
   {
     host: 'www2.example.com',
     username: 'pstadler',
-    agent: process.env.SSH_AUTH_SOCK
-  }
+    agent: process.env.SSH_AUTH_SOCK,
+  },
 ]);
 
 var tmpDir = 'example-com-' + new Date().getTime();
 
 // run commands on localhost
-plan.local(function(local) {
+plan.local(async function (local) {
   local.log('Run build');
-  local.exec('gulp build');
+  await local.exec('gulp build');
 
   local.log('Copy files to remote hosts');
-  var filesToCopy = local.exec('git ls-files', {silent: true});
+  var filesToCopy = await local.exec('git ls-files', { silent: true });
   // rsync files to all the target's remote hosts
-  local.transfer(filesToCopy, '/tmp/' + tmpDir);
+  await local.transfer(filesToCopy, '/tmp/' + tmpDir);
 });
 
 // run commands on the target's remote hosts
-plan.remote(function(remote) {
+plan.remote(async function (remote) {
   remote.log('Move folder to web root');
-  remote.sudo('cp -R /tmp/' + tmpDir + ' ~', {user: 'www'});
-  remote.rm('-rf /tmp/' + tmpDir);
+  await remote.sudo('cp -R /tmp/' + tmpDir + ' ~', { user: 'www' });
+  await remote.rm('-rf /tmp/' + tmpDir);
 
   remote.log('Install dependencies');
-  remote.sudo('npm --production --prefix ~/' + tmpDir
-                            + ' install ~/' + tmpDir, {user: 'www'});
+  await remote.sudo('npm --production --prefix ~/' + tmpDir + ' install ~/' + tmpDir, {
+    user: 'www',
+  });
 
   remote.log('Reload application');
-  remote.sudo('ln -snf ~/' + tmpDir + ' ~/example-com', {user: 'www'});
-  remote.sudo('pm2 reload example-com', {user: 'www'});
+  await remote.sudo('ln -snf ~/' + tmpDir + ' ~/example-com', { user: 'www' });
+  await remote.sudo('pm2 reload example-com', { user: 'www' });
 });
 
 // run more commands on localhost afterwards
-plan.local(function(local) { /* ... */ });
+plan.local(function (local) {
+  /* ... */
+});
 // ...or on remote hosts
-plan.remote(function(remote) { /* ... */ });
+plan.remote(function (remote) {
+  /* ... */
+});
 ```
 
 # Documentation
@@ -263,7 +268,7 @@ Instead of having a static hosts configuration for a target you can configure
 it on the fly by passing a function `fn(done)` as the second argument to
 `target()`.
 
-This function is executed at the very beginning. Whatever is passed to
+This function is exectued at the very beginning. Whatever is passed to
 `done()` will be used for connecting to remote hosts. This can either be an
 object or an array of objects depending on if you want to connect to one or
 multiple hosts. Passing an `Error` object will immediately abort the current
@@ -378,12 +383,12 @@ flights, or an `SSH` for remote flights. Both transports
 expose the same set of methods as described in this section.
 
 ```javascript
-plan.local(function(local) {
-  local.echo('Shell.echo() called');
+plan.local(async function(local) {
+  await local.echo('Shell.echo() called');
 });
 
-plan.remote(function(remote) {
-  remote.echo('SSH.echo() called');
+plan.remote(async function(remote) {
+  await remote.echo('SSH.echo() called');
 });
 ```
 
@@ -408,7 +413,7 @@ plan.remote(function(transport) { // applies to local flights as well
 });
 ```
 
-### transport.exec(command[, options]) → code: int, stdout: String, stderr: String
+### transport.exec(command[, options]) → Promise<{code: int, stdout: String, stderr: String}>
 
 To execute a command you have the choice between using `exec()` or one
 of the handy wrappers for often used commands:
@@ -439,7 +444,7 @@ To apply these options to multiple commands check out the docs of
 Each command returns an object containing `code`, `stdout` and`stderr`:
 
 ```javascript
-var result = transport.echo('Hello world');
+var result = await transport.echo('Hello world');
 console.log(result); // { code: 0, stdout: 'Hello world\n', stderr: null }
 ```
 
@@ -456,7 +461,7 @@ local.ls('-al', {exec: {maxBuffer: 2000*1024}});
 remote.ls('-al', {exec: {pty: true}});
 ```
 
-### transport.sudo(command[, options]) → code: int, stdout: String, stderr: String
+### transport.sudo(command[, options]) → Promise<{code: int, stdout: String, stderr: String}>
 
 Execute a command as another user with `sudo()`. It has the same
 signature as `exec()`. Per default, the user under which the command
@@ -496,7 +501,7 @@ www:x:1002:1002::/home/www:/bin/bash   # GOOD
 www:x:1002:1002::/home/www:/bin/false  # BAD
 ```
 
-### transport.transfer(files, remoteDir[, options]) → [results]
+### transport.transfer(files, remoteDir[, options]) → Promise<[results]>
 
 Copy a list of files to the current target's remote host(s) using
 `rsync` with the SSH protocol. File transfers are executed in parallel.
@@ -516,16 +521,20 @@ strings are handled as well:
 
 ```javascript
 // use result from a previous command
-var files = local.git('ls-files', {silent: true}); // get list of files under version control
+var files = await local.git('ls-files', {
+  silent: true
+}); // get list of files under version control
 local.transfer(files, '/tmp/foo');
 
 // use zero-terminated result from a previous command
-var files = local.exec('(git ls-files -z;find node_modules -type f -print0)', {silent: true});
+var files = await local.exec('(git ls-files -z;find node_modules -type f -print0)', {
+  silent: true
+});
 local.transfer(files, '/tmp/foo');
 
 // use results from multiple commands
-var result1 = local.git('ls-files', {silent: true}).stdout.split('\n');
-var result2 = local.find('node_modules -type f', {silent: true}).stdout.split('\n');
+var result1 = await local.git('ls-files', {silent: true}).stdout.split('\n');
+var result2 = await local.find('node_modules -type f', {silent: true}).stdout.split('\n');
 var files = result1.concat(result2);
 files.push('path/to/another/file');
 local.transfer(files, '/tmp/foo');
@@ -537,29 +546,29 @@ In this case the latter will be used. If debugging is enabled
 (either with `target()` or with `fly --debug`), `rsync` is executed
 in verbose mode (`-vv`).
 
-### transport.prompt(message[, options]) → input
+### transport.prompt(message[, options]) → Promise<input>
 
 Prompt for user input.
 
 ```javascript
-var input = transport.prompt('Are you sure you want to continue? [yes]');
+var input = await transport.prompt('Are you sure you want to continue? [yes]');
 if(input.indexOf('yes') === -1) {
   plan.abort('User canceled flight');
 }
 
 // prompt for password (with UNIX-style hidden input)
-var password = transport.prompt('Enter your password:', { hidden: true });
+var password = await transport.prompt('Enter your password:', { hidden: true });
 
 // prompt when deploying to a specific target
 if(plan.runtime.target === 'production') {
-  var input = transport.prompt('Ready for deploying to production? [yes]');
+  var input = await transport.prompt('Ready for deploying to production? [yes]');
   if(input.indexOf('yes') === -1) {
     plan.abort('User canceled flight');
   }
 }
 ```
 
-### transport.waitFor(fn(done)) → {} mixed
+### transport.waitFor(fn(done)) → Promise<mixed>
 
 Execute a function and return after the callback `done` is called.
 This is used for running asynchronous functions in a synchronous way.
@@ -568,7 +577,7 @@ The callback takes an optional argument which is then returned by
 `waitFor()`.
 
 ```javascript
-var result = transport.waitFor(function(done) {
+var result = await transport.waitFor(function(done) {
   require('node-notifier').notify({
       message: 'Hello World'
     }, function(err, response) {
@@ -578,21 +587,21 @@ var result = transport.waitFor(function(done) {
 console.log(result); // 'sent!'
 ```
 
-### transport.with(command|options[, options], fn)
+### transport.with(command|options[, options], fn) → Promise
 
 Execute commands with a certain context.
 
 ```javascript
-transport.with('cd /tmp', function() {
-  transport.ls('-al'); // 'cd /tmp && ls -al'
+await transport.with('cd /tmp', async function() {
+  await transport.ls('-al'); // 'cd /tmp && ls -al'
 });
 
-transport.with({silent: true, failsafe: true}, function() {
-  transport.ls('-al'); // output suppressed, fail safely
+await transport.with({silent: true, failsafe: true}, async function() {
+  await transport.ls('-al'); // output suppressed, fail safely
 });
 
-transport.with('cd /tmp', {silent: true}, function() {
-  transport.ls('-al'); // 'cd /tmp && ls -al', output suppressed
+await transport.with('cd /tmp', {silent: true}, async function() {
+  await transport.ls('-al'); // 'cd /tmp && ls -al', output suppressed
 });
 ```
 
@@ -629,7 +638,7 @@ non-zero exit code.
 
 ```javascript
 transport.failsafe();
-transport.ls('foo'); // ls: foo: No such file or directory
+await transport.ls('foo'); // ls: foo: No such file or directory
 transport.log('Previous command failed, but flight was not aborted');
 ```
 
@@ -641,10 +650,10 @@ a non-zero exit code). This is the default behavior.
 
 ```javascript
 transport.failsafe();
-transport.ls('foo'); // ls: foo: No such file or directory
+await transport.ls('foo'); // ls: foo: No such file or directory
 transport.log('Previous command failed, but flight was not aborted');
 transport.unsafe();
-transport.ls('foo'); // ls: foo: No such file or directory
+await transport.ls('foo'); // ls: foo: No such file or directory
 // flight aborted
 ```
 
@@ -674,12 +683,9 @@ transport.debug('Copying files to remote hosts');
 [npm-url]: https://npmjs.com/package/flightplan
 [npm-version-image]: https://img.shields.io/npm/v/flightplan.svg?style=flat-square
 [npm-downloads-image]: https://img.shields.io/npm/dm/flightplan.svg?style=flat-square
-
 [dependencies-url]: https://david-dm.org/pstadler/flightplan
 [dependencies-image]: https://david-dm.org/pstadler/flightplan.svg?style=flat-square
-
 [build-status-url]: https://travis-ci.org/pstadler/flightplan
 [build-status-image]: https://img.shields.io/travis/pstadler/flightplan/master.svg?style=flat-square
-
 [coverage-url]: https://coveralls.io/github/pstadler/flightplan?branch=master
 [coverage-image]: https://img.shields.io/coveralls/pstadler/flightplan/master.svg?style=flat-square

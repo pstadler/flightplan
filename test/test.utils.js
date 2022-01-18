@@ -1,15 +1,14 @@
-var expect = require('chai').expect
-  , proxyquire = require('proxyquire')
-  , sinon = require('sinon')
-  , os = require('os');
+var expect = require('./utils/chai').expect,
+  proxyquire = require('proxyquire'),
+  sinon = require('sinon'),
+  os = require('os');
 
-describe('utils', function() {
-
-  describe('#writeTempFile()', function() {
-    it('should write to the global directory on *NIX', function() {
+describe('utils', function () {
+  describe('#writeTempFile()', function () {
+    it('should write to the global directory on *NIX', function () {
       var MOCKS = {
         os: { platform: sinon.stub().returns('linux') },
-        fs: { writeFileSync: sinon.stub() }
+        fs: { writeFileSync: sinon.stub() },
       };
 
       var writeTempFile = proxyquire('../lib/utils', MOCKS).writeTempFile;
@@ -21,10 +20,10 @@ describe('utils', function() {
       expect(MOCKS.fs.writeFileSync.lastCall.args).to.deep.equal([result, 'content']);
     });
 
-    it('should write to the current directory on Windows', function() {
+    it('should write to the current directory on Windows', function () {
       var MOCKS = {
         os: { platform: sinon.stub().returns('win32') },
-        fs: { writeFileSync: sinon.stub() }
+        fs: { writeFileSync: sinon.stub() },
       };
 
       var writeTempFile = proxyquire('../lib/utils', MOCKS).writeTempFile;
@@ -37,8 +36,8 @@ describe('utils', function() {
     });
   });
 
-  describe('#escapeSingleQuotes()', function() {
-    it('should correctly escape single quotes', function() {
+  describe('#escapeSingleQuotes()', function () {
+    it('should correctly escape single quotes', function () {
       var escapeSingleQuotes = proxyquire('../lib/utils', {}).escapeSingleQuotes;
 
       expect(escapeSingleQuotes("'string'")).to.equal("'\\''string'\\''");
@@ -47,5 +46,4 @@ describe('utils', function() {
       expect(escapeSingleQuotes()).to.be.undefined;
     });
   });
-
 });
